@@ -1,0 +1,2823 @@
+{% extends "base.html" %}
+{% load IO_filters %}
+{% load filters %}
+{% load static%}
+{% load bootstrap4 %}
+{% block content %}
+<meta charset="UTF-8" />
+
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+        
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+            <!-- Sidebar Toggle (Topbar) -->
+            <form class="form-inline">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </form>
+    
+            <button type="button" id="sidebarCollapse" class="navbar-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+                        
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#sidebarCollapse').on('click', function () {
+                        $('#sidebar').toggleClass('active');
+                        $(this).toggleClass('active');
+                    });
+                });
+            </script>
+                        
+            <!-- Page Heading -->
+            <h5 class="m-0 ml-3 text-gray-800">patient id : {{ patient.patient_id }} /</h5>
+            <h5 class="m-0 ml-2 text-gray-800">Doctor ID : {{ patient.user }}</h5>
+            <p class="m-0 ml-2">Visit date : {{ visit_date }}</p>
+
+            <ul class="navbar-nav ml-auto">
+    
+                <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                <li class="nav-item dropdown no-arrow d-sm-none">
+                    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-search fa-fw"></i>
+                    </a>
+                    <!-- Dropdown - Messages -->
+                    <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+                        <form class="form-inline mr-auto w-100 navbar-search">
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+
+                <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user_id }}</span>
+                        <img class="img-profile rounded-circle" src="{% static "img/undraw_profile.svg" %}">
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- End of Topbar -->
+        
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <div class="card shadow mb-4">
+
+                <div class="card-body">
+                    <!-- 검출된 결절이 없는 경우 -->
+                    {% if num_nodules == 0 %}
+                        <div class="row">
+                            <div style="width: 120%; height: auto;">
+                                <div class="row" style="margin-left: 2px;">
+                                    <div>
+                                        <h3 class="h3 mb-2 text-gray-600" align="center">■ Detected Nodules: {{ num_nodules }}</h3>
+                                    </div>
+                                    <div>
+                                        <h3 class="h3 mb-2 text-gray-600" align="center" style="margin-left: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;■ Absent</h3>
+                                    </div>
+                                </div>
+                                <div>
+                                    <ul class="tabs">
+                                        <li class="tab-link current" data-tab="image">Original Image</li>
+                                        <li class="tab-link" data-tab="comment">comment</li>
+                                        {% if patient.user == user_id %}
+                                            <li class="tab-link" data-tab="pandok">interpretation</li>
+                                        {% endif %}
+                                    </ul>
+                                    <div id="image" class="tab-content current">
+                                        <div class="row">
+                                            <div style="margin: 45px 20px;">
+                                                <img class="card border-left-primary shadow h-100 py-2" style="width: 750px; height: 300px;" src={{ inspection_image_path|add_dir:'detection' }}>
+                                            </div>
+                                            <div>
+                                                <h5 class="h5 mb-2 text-gray-600" style="margin-top: 20%;">● Nodules did not detected. </h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="comment" style="width: 100%;" class="tab-content">
+                                        <h6 class="h6_comment"></h6>
+                                        <script>
+                                            var ment_cnt = {{ments|length}}
+                                               
+                                            {% for comment in ments %}
+                                                {%if not comment.interpretation == None or comment.body == None %} 
+                                                    ment_cnt -= 1
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            if (ment_cnt <= 0) {
+                                                ment_cnt = 0
+                                            }
+
+                                            $(".h6_comment").html("<h6>댓글 목록 " + ment_cnt + " 개</h6>").removeClass("h6_comment");
+                                        </script>
+                                        
+                                        <table style="font-size: 13px" class="table table-striped table-bordered sortable-table clickable-table" id="problemset">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center; width:20%;" data-sort="string">User</th>
+                                                    <th style="text-align:center; width:20%;">Date</th>
+                                                    <th align="text-align:center; width:400px;">Comment</th>
+                                                    <th style="center" style="width:50%;">Delete</th 
+                                                </tr>
+                                            </thead>
+                                            <tbody class="tbody-comment">
+                                                {% for comment in ments %}
+                                                    {% if not comment.body == None and comment.interpretation == None  %}
+                                                        <tr>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.user }}</td>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.date }}</td>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.body }}</td>
+                                                            <td align="center" width="50">
+                                                                <a href="{% url ' src:ment_delete' patient.id comment.id  %}" method="POST">
+                                                                    <button type="button" class="btn btn-outline-secondary">Delete</button>
+                                                                </a>
+                                                            </td>
+                                                            {% csrf_token %}
+                                                        </tr>
+                                                    {% endif %}
+                                                    {% comment %}
+                                                    {% empty %} 
+                                                        <!-- 댓글 없는 경우의 처리 -->
+                                                        <td colspan="4" align='center' style="vertical-align: middle;">아직 코멘트가 없습니다.</td>
+                                                    {%endcomment%}
+                                                {% endfor %}
+                                                <script>
+                                                    if (ment_cnt == 0) {
+                                                        var insertMent = "";
+                                                        
+                                                        insertMent += '<tr>';
+                                                        insertMent += '<td colspan="4" align="center" style="vertical-align:middle;">아직 코멘트가 없습니다.</td>';
+                                                        insertMent += '</tr>';
+
+                                                        $("tbody.tbody-comment").append(insertMent).removeClass("tbody-comment");
+                                                    }
+                                                </script>
+                                            </tbody>
+                                        </table>
+                                        <form action ="{% url ' src:detail2' patient.id %}" method="POST" style="text-align:center; width: 100%;">
+                                            {% csrf_token %}
+                                            <textarea name="body" cols="40" rows="10"  class="form-control" id="id_body" placeholder="Comment..."></textarea>
+                                                <a href="{% url ' src:detail2' patient.id %}" method="POST">
+                                                    <input type = "submit" class="comment_save" value = "Save"></input>
+                                                </a>
+                                        </form>
+                                    </div>
+                                
+                                    <div id="pandok" style="width: 100%;" class="tab-content">
+                                        <h6>* 판독문은 진단의만 작성할 수 있습니다 *</h6>
+                                        <table style="font-size: 13px" class="table table-striped table-bordered sortable-table clickable-table" id="problemset">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center; width:20%;" data-sort="string">User</th>
+                                                    <th style="text-align:center; width:20%">Date</th>
+                                                    <th align="text-align:center;width:400px;" style="text-align:center; width:50%;" >interpretation</th>
+                                                    <th align="center" style="width: 10%;">Delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="tbody-interpretation">
+                                                {% for comment in ments %}
+                                                    {% if not comment.interpretation == None and comment.body == None %}
+                                                        <tr>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.user }}</td>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.date }}</td>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.interpretation }}</td>
+                                                            <td align="center" width="50">
+                                                                <a href="{% url ' src:ment_delete' patient.id comment.id  %}" method="POST">
+                                                                    <button type="button" class="btn btn-outline-secondary">Delete</button>
+                                                                </a>
+                                                            </td>
+                                                            {% csrf_token %}
+                                                        </tr>
+                                                    
+                                                    {% endif %}
+                                                    {%comment%}
+                                                    {% empty %} <!-- 댓글 없는 경우의 처리 -->
+                                                        <td colspan="4" align='center' style="vertical-align: middle;">아직 태깅이 없습니다.</td>
+                                                    {% endcomment %}
+                                                {% endfor %}
+                                                <script>
+                                                    var ment_cnt = {{ments|length}}
+    
+                                                    {% for comment in ments %}
+                                                        {% if not comment.body == None or comment.interpretation == None  %} 
+                                                            ment_cnt -= 1
+                                                        {% endif %}
+                                                    {% endfor %}
+    
+                                                    if (ment_cnt <= 0) {
+                                                        ment_cnt = 0
+                                                    }
+    
+                                                    if (ment_cnt == 0) {
+                                                        var insertMent = "";
+                                                        
+                                                        insertMent += '<tr>';
+                                                        insertMent += '<td colspan="4" align="center" style="vertical-align: middle;">아직 태깅이 없습니다.</td>';
+                                                        insertMent += '</tr>';
+    
+                                                        $("tbody.tbody-interpretation").append(insertMent).removeClass("tbody-interpretation");
+                                                    }
+                                                </script>
+                                            </tbody>
+                                        </table>
+                                        <form method="POST">
+                                            {% csrf_token %}
+                                            <textarea name="interpretation" cols="40" rows="10" maxlength="200"  class="form-control" id="id_interpretation" placeholder="interpretation..."></textarea>
+                                            <a href="{% url ' src:detail2' patient.id %}" method="POST"> 
+                                                <span class="text">
+                                                        <input type = "submit" class="interpretation_save" value = "Save">
+                                                </span> 
+                                            </a>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- 검출된 결절이 1개 이상인 경우 -->
+                        <div class="row">
+                            <div style="width: 100%; height: auto;">
+                                <div class="row" style="margin-left: 2px;">
+                                    <div>
+                                        <!-- 검출된 결절의 개수 표시 -->
+                                        <h3 class="h3 mb-2 text-gray-600" align="center">■ Detected Nodules : {{ num_nodules }}</h3>
+                                    </div>
+                                    <div>
+                                        <h3 class="h3 mb-2 text-gray-600" align="center" style="margin-left: 20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;■ Present</h3>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row">  
+                                        <ul class="tabs">
+                                            <!-- 결절의 갯수만큼 탭을 만들어 검사 결과 표시하도록 함.-->
+                                            {% for odx in patient_info %}
+                                                {% if forloop.counter == 1%}
+                                                    <li class="tab-link current" data-tab="nodule{{ forloop.counter }}">nodule {{ forloop.counter }} tagging</li>
+                                                {% else %}
+                                                    <li class="tab-link" data-tab="nodule{{ forloop.counter }}">nodule {{ forloop.counter }} tagging</li>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            <!-- 코멘트 탭, 판독문 탭 생성  -->
+                                            <!-- 판독문 탭은 이미지를 업로드 한 유저에게만 보이도록 구성 -->
+                                            <li class="tab-link" data-tab="comment">comment</li>
+                                            {% if patient.user == user_id %}
+                                                <li class="tab-link" data-tab="pandok">interpretation</li>
+                                            {% endif %}
+                                        </ul>
+
+                                        {% if image_length != 1 %}
+                                            <!-- 종단, 횡단면 이미지를 교체하여 볼 수 있게  select로 구성 -->
+                                            <!-- Axial은 횡단면 이미지, Sagittal은 종단면 이미지를 보여줌.-->
+                                            <div style = "margin-left:20%">
+                                                <form method="post" action="" id="direction_form" class="direction_form">
+                                                    <select name="direction_select" id="direction_select" onchange="this.form.submit();">
+                                                        <option value="axial">Axial</option>
+                                                        <option value="sagittal">Sagittal</option>
+                                                    </select>
+                                                    
+                                                    <!-- select에서 선택한 결과를 submit되도도 유지될 수 있도록 만들어주는 함수 -->
+                                                    <script>
+                                                        $(document).ready(function() {
+                                                            $("select[name=direction_select]").val("{{ direction }}")
+                                                        })
+                                                    </script>
+                                                </form>
+                                            </div>
+                                        {% else %}
+                                        {% endif %}
+                                    </div>
+
+                                    <div id="original_image" class="tab-content" style="display: none;">
+                                    </div>
+
+                                    <!-- 결절의 갯수에 맞게 탭에 인공지능 판독결과를 보여주는 부분 -->
+                                    {% for info in patient_info %}               
+                                        {% with forloop.counter as idx %}
+                                            {%  if idx == 1 %}
+                                                <div id="nodule{{ idx }}" class="tab-content current">
+                                            {% else %}
+                                                <div id="nodule{{ idx }}" class="tab-content">
+                                            {% endif %}
+
+                                            <div class="row" style="margin-left: 3px; margin-right: 10px;">
+                                                <!-- name, result에 관련된 코드는 history/templatetags/utils.py → get_patient_info 함수 참조 -->
+                                                
+                                                {% for name, result in info %}
+                                                    
+                                                    {% if '#th nodule' in name%}
+                                                        
+                                                    {% elif 'nodule image path' in name %}
+                                                        <!-- 초음파 이미지에서 결절 위치에 박스가 그려진 이미지를 보여주는 부분-->
+                                                        <!-- add_dir | 이미지의 경로를 절대 경로에서 상대경로로 변경해줌. -->
+                                                        <!-- 자세한 코드는 history/templatetags/filters.py | add_dir 코드 참조 -->
+                                                        <div class="pb-2" style="float: left; width: 50%; height: auto;" align="center"> 
+                                                            <img class="card M-4" style="width: 100%; height:auto;"  src={{ inspection_image_path|add_dir:'detection' }}>
+                                                        </div>
+                                                        
+                                                        <!-- 초음파 이미지에서 결절만 크롭한 이미지를 보여주는 부분-->
+                                                        <div class="pb-2" style="float: center; width: 40%; height: auto;" align="center"> 
+                                                            <div style="margin-left : 0%;">
+                                                                <img class="card M-4" style="width: auto; height:50%;" src={{ result|add_dir }}>
+                                                            </div>
+
+                                                            <!-- K-TIRADS 등급별 암 위험도 및 생검 기준 추가 해주는 부분-->
+                                                            <div>
+                                                                <h4 classs="h3 mb-2 text-gray-800" style = "margin-left : -50%; display : inline;">■ REFERENCES </h4>
+                                                            </div>
+                                                            <div>
+                                                                <!-- 검사결과 text 파일을 불러오기 위해 결절의 갯수에 맞게 경로 뒤에 인덱스 값을 붙여줌. -->
+                                                                <!-- (e.g.) 2022/03/23 => media/2022/03/23/patient_id/1, 2, 3, ... -->
+                                                                <!-- 자세한 코드는 IO/templatetags/IO_filters.py -> add_slash_extension 코드 확인 부탁드립니다. -->
+
+                                                                
+
+                                                                        <!-- 검사 텍스트에서 K-TIRADS 등급을 가져오는 부분 -->
+                                                                        <!-- 기존에는 조금 복잡한 방법으로 텍스트 파일을 가져온 반면에, 이번엔 그냥 text_file 변수로 텍스트 파일을 가져오도록 수정-->
+                                                                        <!-- 자세한 코드는 history/templatetags/filters.py -> history_view 코드 확인 부탁드립니다. -->
+
+                                                                        {% with classi_text_path as text_file%}
+                                                                            {% with text_file|history_view as grade%}
+                                                                                <!-- K-TIRADS 등급에 맞춰 FNA 검사 기준, Malignancy Risk 표시 -->    
+                                                                                <table style='width: 115%; margin-left: 10%;' class="table">    
+                                                                                    <thead class="thead-light">
+                                                                                        <tr>
+                                                                                            <th style='width: 18%;'>K-TIRADS</th>
+                                                                                            <th style='width: 30%'>Biospy size threshold</th>
+                                                                                            <th style='width: 40%'>Malignancy Risk (%)</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <tr>
+                                                                                            <td align="center">{{ grade }}</td>
+                                                                                            
+                                                                                            {% if "C2" in grade %}
+                                                                                                <td align="center">
+                                                                                                    <!-- (+) 위에 마우스를 올리면 추가 정보가 나오도록 구성-->
+                                                                                                    <div class="tool">N/A <sup>(+)</sup>
+                                                                                                        <span class="tooltext tool-bottom">&ge; 2cm, selecively performed.
+                                                                                                            <br>if which progressively grow or 
+                                                                                                            <br>cause compressive symptom and before ablation therapy.
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                                <td align="center">
+                                                                                                    spongiform :  &lt; 3<br>
+                                                                                                    else : &lt; 1
+                                                                                                </td>
+                                                                                            {% elif "C3" in grade %}
+                                                                                                <td align="center">&gt; 2.0 cm</td>
+                                                                                                <td align="center">3 ~ 10</td>
+                                                                                            {% elif "C4" in grade %}
+                                                                                                <td align="center">&gt; 1.0 ~ 1.5 cm</td>
+                                                                                                <td align="center">15 ~ 40 </td>
+                                                                                            {% elif "C5" in grade %}
+                                                                                                <td align="center">
+                                                                                                    <div class="tool">
+                                                                                                        <!-- (+) 위에 마우스를 올리면 추가 정보가 나오도록 구성-->
+                                                                                                        &ge; 1.0 cm <sup>(+)</sup>
+                                                                                                        <span class="tooltext tool-bottom">
+                                                                                                            <br>Biospy may be selectively perfomed to determine
+                                                                                                            <br>to active surveillance or surgery 
+                                                                                                            <br>in high suspicion subcentimeter nodules (&gt; 0.5cm)
+                                                                                                        </span>
+                                                                                                    </div>
+                                                                                                </td>
+                                                                                                <td align="center">&gt; 60</td>
+                                                                                            {% else %}
+                                                                                                <td align="center">N/A</td>
+                                                                                                <td align="center">N/A</td>
+                                                                                            {% endif %}
+                                                                                        </tr>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            {% endwith %}
+                                                                {% endwith %}
+                                                            </div>
+                                                        </div>
+                                                        <table class="table">
+                                                            <thead class="thead-light">
+                                                                <tr>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">B / M</th>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">N / P</th>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">echogenicity</th>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">margin</th>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">calcification</th>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">orientation</th>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">Shape</th>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">internal</th>
+                                                                    <th width="9.09%" scope="col" style = "text-align: center;">comet-tail</th>
+                                                                    <th width="9.09%" scope="col"></th>                                                                      
+                                                                    <th width="9.09%" scope="col" style="background-color : #eaecf4; border-collapse: collapse; border-right: 3px solid #168; border-left: 3px solid #168; text-align: center;">※ K-TIRADS</th>
+                                                                            {% comment %} {% with classi_text_path as text_file%}
+                                                                        {% with text_file|history_view as grade%}
+                                                                            
+                                                                        {% endwith %}
+                                                                    {% endwith %} {% endcomment %}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody><tr>
+                                                    {% elif "spongiform" in name %}
+                                                        <div style="width:9.09%"></div>
+                                                    {% elif "malignant" in name %}
+                                                        <!-- Benign/ Malignant 검사 결과 표시 -->
+                                                        <td>
+                                                            <script>
+                                                                var trcount = 1;
+                                                                var scoreBM = -1;
+                                                            </script>
+                                                            {% for malignant, score in result|search:'bm' %}
+                                                                <div style="text-align: center;font-size: 13px;">
+                                                                    <p style = "color:#000;" class="BM{{score|slice:'-4'}}">{{ malignant }} : {{score}}</p>
+                                                                </div>
+                                                                <script>
+                                                                    var valueBM = parseFloat("{{score|slice:'-4'}}");
+                                                                    if(scoreBM < valueBM) {
+                                                                        if(scoreBM !== -1) {
+                                                                            $(".BM" + String(scoreBM)).removeClass("BM" + String(scoreBM));   
+                                                                        }
+                                                                        scoreBM = valueBM;
+                                                                    } else {
+                                                                        $(".BM" + String(valueBM)).removeClass("BM" + String(valueBM));
+                                                                    }                
+                                                                    document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ malignant }} : {{score}}" + "</td>";
+                                                                    trcount = trcount + 1;
+                                                                </script>
+                                                            {% endfor %}
+                                                            <script>
+                                                                $(".BM" + String(scoreBM)).css({'color':'blue', "font-weight":"bold"}).removeClass("BM" + String(scoreBM));
+                                                            </script>
+                                                        </td>
+                                                        <!-- Positive/ Negative 검사 결과 표시 -->
+                                                        <td>
+                                                            <script>
+                                                                var trcount = 1;
+                                                                var scorePN = -1;
+                                                            </script>
+                                                            {% for positive, score in result|search:'pn' %}
+                                                                <div style="text-align: center;font-size: 13px;">
+                                                                    <p style = "color:#000;" class="PN{{score|slice:'-4'}}">{{ positive }} : {{score}}</p>
+                                                                </div>
+                                                                <script>
+                                                                    var valuePN = parseFloat("{{score|slice:'-4'}}");
+                                                                    if(scorePN < valuePN) {
+                                                                        if(scorePN !== -1) {
+                                                                            $(".PN" + String(scorePN)).removeClass("PN" + String(scorePN));   
+                                                                        }
+                                                                        scorePN = valuePN;
+                                                                    } else {
+                                                                        $(".PN" + String(valuePN)).removeClass("PN" + String(valuePN));
+                                                                    }        
+                                                                    document.getElementById("tr" + trcount + "-3").innerHTML += "<td>" + "{{ positive }} : {{score}}" + "</td>";
+                                                                    trcount = trcount + 1;
+                                                                </script>
+                                                            {% endfor %}
+                                                            <script>
+                                                                $(".PN" + String(scorePN)).css({'color':'blue', "font-weight":"bold"}).removeClass("PN" + String(scorePN));
+                                                            </script>
+                                                        </td>
+                                                    {% elif "echogenicity" in name %}
+                                                        <!-- echogenicity 검사 결과 표시 -->
+                                                        <td>
+                                                            <script>
+                                                                var trcount = 1;
+                                                                var scoreEcho = -1;
+                                                            </script>
+
+                                                            <!-- 검사결과가 텍스트 파일에 존재하는 경우 -->
+                                                            <!-- 자세한 코드는 history/templatetags/filters.py | is_None 코드 참조 -->
+                                                            {% with result|is_None as is_none%}
+                                                                {% if not is_none %}
+                                                                    {% for echo, score in result|search:'echo' %}
+                                                                        <div style="text-align: center;font-size: 13px;">
+                                                                            <p style = "color:#000;" class="Echo{{score|slice:'-4'}}">{{ echo }} : {{score}}</p>
+                                                                        </div>
+                                                                        <script>
+                                                                            var valueEcho = parseFloat("{{score|slice:'-4'}}");
+                                                                            if(scoreEcho < valueEcho) {
+                                                                                if(scoreEcho !== -1) {
+                                                                                    $(".Echo" + String(scoreEcho)).removeClass("Echo" + String(scoreEcho));   
+                                                                                }
+                                                                                scoreEcho = valueEcho;
+                                                                            } else {
+                                                                                $(".Echo" + String(valueEcho)).removeClass("Echo" + String(valueEcho));
+                                                                            }       
+                                                                            document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ echo }} : {{score}}" + "</td>";
+                                                                            trcount = trcount + 1;
+                                                                        </script>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                            <script>
+                                                                $(".Echo" + String(scoreEcho)).css({'color':'blue', "font-weight":"bold"}).removeClass(".Echo" + String(scoreEcho));
+                                                            </script>
+                                                        </td>
+                                                    {% elif "margin" in name %}
+                                                        <!-- margin 검사 결과 표시 -->
+                                                        <td>
+                                                            <script>
+                                                                var trcount = 1;
+                                                                var scoreMargin = -1;
+                                                            </script>
+
+                                                            <!-- 검사결과가 텍스트 파일에 존재하는 경우 -->
+                                                            <!-- 자세한 코드는 history/templatetags/filters.py | is_None 코드 참조 -->
+                                                            {% with result|is_None as is_none%}
+                                                                {% if not is_none %}
+                                                                    {% for margin, score in result|search:'margin' %}
+                                                                        <div style="text-align: center;font-size: 13px;">
+                                                                            {% with classi_text_path as text_file%}
+                                                                                {% with text_file|history_view as grade%}
+                                                                                    {% comment %}
+                                                                                        <!-- K-TIRADS가 C2, C3인 경우에 N/A 처리 -->
+                                                                                        <!-- is_positive 함수는 grade가 C2, C3인지 판별해주는 함수 -->
+                                                                                        <!-- 자세한 코드는 history/templatetags/filters.py | is_positive 함수 참조 -->
+
+                                                                                        {% if grade|is_positive %}
+                                                                                            <!-- margin인 경우에 spiculated는 NA 처리-->
+                                                                                            <!-- 자세한 코드는 history/templatetags/filters.py | NA_contents 코드 참조 -->
+                                                                                            {% if margin|NA_contents:'margin' %}
+                                                                                                <p style = "color:#000;">{{ margin }} : N/A </p>
+                                                                                            {% else %}
+                                                                                                <p style = "color:#000;">{{ margin }} : {{ score }} </p>
+                                                                                            {% endif %}
+
+                                                                                        {% else %}
+                                                                                            <p style = "color:#000;">{{ margin }} : {{ score }} </p>
+
+                                                                                        {% endif %}
+                                                                                    {% endcomment %}
+
+                                                                                    <p style = "color:#000;" class="Margin{{score|slice:'-4'}}">{{ margin }} : {{ score}}</p>
+                                                                                {% endwith %}
+                                                                            {% endwith %}
+                                                                        </div>
+                                                                        <script>
+                                                                            var valueMargin = parseFloat("{{score|slice:'-4'}}");
+                                                                            if(scoreMargin < valueMargin) {
+                                                                                if(scoreMargin != -1) {
+                                                                                    $(".Margin" + String(scoreMargin)).removeClass("Margin" + String(scoreMargin));
+                                                                                }
+                                                                                scoreMargin = valueMargin;
+                                                                            } else {
+                                                                                $(".Margin" + String(valueMargin)).removeClass("Margin" + String(valueMargin));
+                                                                            }
+                                                                            document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ margin }} : {{score}}" + "</td>";
+                                                                            trcount = trcount + 1;
+                                                                        </script>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                            <script>
+                                                                $(".Margin" + String(scoreMargin)).css({'color':'blue', "font-weight":"bold"}).removeClass("Margin" + String(scoreMargin));
+                                                            </script>
+                                                        </td>
+                                                    {% elif "calcification" in name %}
+                                                        <!-- calcification 검사 결과 표시 -->
+                                                        <td>
+                                                            <script>
+                                                                var trcount = 1;
+                                                                var scoreCalci = -1;
+                                                            </script>
+                                                            <!-- 검사결과가 텍스트 파일에 존재하는 경우 -->
+                                                            <!-- 자세한 코드는 history/templatetags/filters.py | is_None 코드 참조 -->
+                                                            {% with result|is_None as is_none%}
+                                                                {% if not is_none %}
+                                                                    {% for calcification, score in result|search:'calcification' %}
+                                                                        <div style="text-align: center;font-size: 13px;">
+                                                                            {% with classi_text_path as text_file%}
+                                                                                {% with text_file|history_view as grade%}
+                                                                                    {% comment %}
+                                                                                        <!-- K-TIRADS가 C2, C3인 경우에 N/A 처리 -->
+                                                                                        <!-- is_positive 함수는 grade가 C2, C3인지 판별해주는 함수 -->
+                                                                                        <!-- 자세한 코드는 history/templatetags/filters.py | is_positive 함수 참조 -->
+                                                                                        {% if grade|is_positive %}
+                                                                                            <!-- calcification인 경우에 micro calcification은 NA 처리-->
+                                                                                            <!-- 자세한 코드는 history/templatetags/filters.py | NA_contents 코드 참조 -->
+                                                                                            {% if calcification|NA_contents:'calci' %}
+                                                                                                <p style = "color:#000;">{{ calcification }} : N/A </p>
+                                                                                            {% else %}
+                                                                                                <p style = "color:#000;">{{ calcification }} : {{ score }} </p>
+                                                                                            {% endif %}
+
+                                                                                        {% else %}
+                                                                                            <p style = "color:#000;">{{ calcification }} : {{ score }} </p>
+
+                                                                                        {% endif %}
+                                                                                    {% endcomment %}
+
+                                                                                    <p style = "color:#000;" class="Calci{{score|slice:'-4'}}">{{ calcification }} : {{ score }}</p>
+                                                                                {% endwith %}
+                                                                            {% endwith %}
+                                                                        </div>
+                                                                        <script>
+                                                                            var valueCalci = parseFloat("{{score|slice:'-4'}}");
+                                                                            if(scoreCalci < valueCalci) {
+                                                                                if(scoreCalci != -1) {
+                                                                                    $(".Calci" + String(scoreCalci)).removeClass("Calci" + String(scoreCalci));
+                                                                                }
+                                                                                scoreCalci = valueCalci;
+                                                                            } else {
+                                                                                $(".Calci" + String(valueCalci)).removeClass("Calci" + String(valueCalci));
+                                                                            }
+                                                                            document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ margin }} : {{score}}" + "</td>";
+                                                                            trcount = trcount + 1;
+                                                                        </script>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                            <script>
+                                                                $(".Calci" + String(scoreCalci)).css({'color':'blue', "font-weight":"bold"}).removeClass("Calci" + String(scoreCalci));
+                                                            </script>
+                                                        </td>
+                                                    {% elif "orientation" in name %}
+                                                        <!-- orientation 검사 결과 표시 -->  
+                                                        <td>
+                                                            <script>
+                                                                var trcount = 1;
+                                                                var scoreOri = -1;
+                                                            </script>
+                                                            <!-- 검사결과가 텍스트 파일에 존재하는 경우 -->
+                                                            <!-- 자세한 코드는 history/templatetags/filters.py | is_None 코드 참조 -->
+                                                            {% with result|is_None as is_none%}
+                                                                {% if not is_none %}
+                                                                    {% for orientation, score in result|search:'orientation' %}
+                                                                        <div style="text-align: center;font-size: 13px;">
+                                                                            {% with classi_text_path as text_file%}
+                                                                                {% with text_file|history_view as grade%}
+                                                                                    {% comment %}
+                                                                                        <!-- K-TIRADS가 C2, C3인 경우에 N/A 처리 -->
+                                                                                        <!-- is_positive 함수는 grade가 C2, C3인지 판별해주는 함수 -->
+                                                                                        <!-- 자세한 코드는 history/templatetags/filters.py | is_positive 함수 참조 -->
+                                                                                        {% if grade|is_positive %}
+                                                                                            <!-- orientation인 경우에 nonparallel은 NA 처리-->
+                                                                                            <!-- 자세한 코드는 history/templatetags/filters.py | NA_contents 코드 참조 -->
+                                                                                            {% if orientation|NA_contents:'ori' %}
+                                                                                                <p style = "color:#000;">{{ orientation }} : N/A </p>
+                                                                                            {% else %}
+                                                                                                <p style = "color:#000;">{{ orientation }} : {{ score }} </p>
+                                                                                            {% endif %}
+
+                                                                                        {% else %}
+                                                                                            <p style = "color:#000;">{{ orientation }} : {{ score }} </p>
+                                                                                            
+                                                                                        {% endif %}
+                                                                                    {% endcomment %}
+                                                                                    <p style = "color:#000;" class="Ori{{score|slice:'-4'}}">{{ orientation }} : {{ score }}</p>
+                                                                                {% endwith %}
+                                                                            {% endwith %}
+                                                                        </div>
+                                                                        <script>
+                                                                            var valueOri = parseFloat("{{score|slice:'-4'}}");
+                                                                            if(scoreOri < valueOri) {
+                                                                                if(scoreOri != -1) {
+                                                                                    $(".Ori" + String(scoreOri)).removeClass("Ori" + String(scoreOri));
+                                                                                }
+                                                                                scoreOri = valueOri;
+                                                                            } else {
+                                                                                $(".Ori" + String(valueOri)).removeClass("Ori" + String(valueOri));
+                                                                            }
+                                                                            document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ orientation }} : {{score}}" + "</td>";
+                                                                            trcount = trcount + 1;
+                                                                        </script>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                            <script>
+                                                                $(".Ori" + String(scoreOri)).css({'color':'blue', "font-weight":"bold"}).removeClass("Ori" + String(scoreOri));
+                                                            </script>
+                                                        </td>
+                                                    {% elif "shape" in name %}
+                                                        <!-- shape 검사 결과 표시 -->
+                                                        <td>
+                                                            <script>
+                                                                var trcount = 1;
+                                                                var scoreShape = -1;
+                                                            </script>
+                                                            <!-- 검사결과가 텍스트 파일에 존재하는 경우 -->
+                                                            <!-- 자세한 코드는 history/templatetags/filters.py | is_None 코드 참조 -->
+                                                            {% with result|is_None as is_none%}
+                                                                {% if not is_none %}
+                                                                    {% for shape, score in result|search:'shape' %}
+                                                                        <div style="text-align: center;font-size: 13px;">
+                                                                            <p style = "color:#000;" class="Shape{{score|slice:'-4'}}">{{ shape }} : {{score}}</p>
+                                                                        </div>
+                                                                        <script>
+                                                                            var valueShape = parseFloat("{{score|slice:'-4'}}");
+                                                                            if(scoreShape < valueShape) {
+                                                                                if(scoreShape != -1) {
+                                                                                    $(".Shape" + String(scoreShape)).removeClass("Shape" + String(scoreShape));
+                                                                                }
+                                                                                scoreShape = valueShape;
+                                                                            } else {
+                                                                                $(".Shape" + String(valueShape)).removeClass("Shape" + String(valueShape));
+                                                                            }
+                                                                            document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ shape }} : {{score}}" + "</td>";
+                                                                            trcount = trcount + 1;
+                                                                        </script>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                            <script>
+                                                                $(".Shape" + String(scoreShape)).css({'color':'blue', "font-weight":"bold"}).removeClass("Shape" + String(scoreShape));
+                                                            </script>
+                                                        </td>         
+                                                    {% elif "internal" in name %}
+                                                        <!-- internal content 검사 결과 표시 -->
+                                                        <td>
+                                                            {% with classi_text_path as text_file%}
+                                                                {% with text_file|history_view as grade%}
+                                                                    <!-- K-TIRADS 등급이 C2인 경우 -->
+                                                                    {% if "C2" in grade %}
+                                                                        <script>
+                                                                            var trcount = 1;
+                                                                            var scoreInternal2 = -1;
+                                                                        </script>
+
+                                                                        <!-- 검사결과가 텍스트 파일에 존재하는 경우 -->
+                                                                        <!-- 자세한 코드는 history/templatetags/filters.py | is_None 코드 참조 -->
+                                                                        {% with result|is_None as is_none %}
+                                                                            {% if not is_none %}
+                                                                                <!-- sponfiform, colloid, benign이 포함된 검사결과로 표시 -->
+                                                                                {% for internal2, score in result|search:'internal2' %}
+                                                                                    <div style="text-align: center;font-size: 13px;">
+                                                                                        <p style = "color:#000;" class="Internal2-{{score|slice:'-4'}}">{{ internal2 }} : {{score}}</p>
+                                                                                    </div>
+                                                                                    <script>
+                                                                                        var valueInternal2 = parseFloat("{{score|slice:'-4'}}");
+                                                                                        if(scoreInternal2 < valueInternal2) {
+                                                                                            if(scoreInternal2 != -1) {
+                                                                                                $(".internal2-" + String(scoreInternal2)).removeClass("internal2-" + String(scoreInternal2));
+                                                                                            }
+                                                                                            scoreInternal2 = valueInternal2;
+                                                                                        } else {
+                                                                                            $(".internal2-" + String(valueInternal2)).removeClass("internal2-" + String(valueInternal2));
+                                                                                        }
+                                                                                        document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ internal2 }} : {{score}}" + "</td>";
+                                                                                        trcount = trcount + 1;
+                                                                                    </script>
+                                                                                {% endfor %}
+                                                                            {% endif %}
+                                                                            <script>
+                                                                                $(".Internal2-" + String(scoreInternal2)).css({'color':'blue', "font-weight":"bold"}).removeClass("Internal2-" + String(scoreInternal2));
+                                                                            </script>
+                                                                        {% endwith %}
+
+                                                                    {% else %}
+                                                                        <!-- C2가 아닌 경우 -->
+                                                                        <script>
+                                                                            var trcount = 1;
+                                                                            var scoreInternal = -1;
+                                                                        </script>
+
+                                                                        <!-- 검사결과가 텍스트 파일에 존재하는 경우 -->
+                                                                        <!-- 자세한 코드는 history/templatetags/filters.py | is_None 코드 참조 -->
+                                                                        {% with result|is_None as is_none%}
+                                                                            {% if not is_none %}
+                                                                                <!-- solid, predominantly solid가 포함된 검사결과로 표시 -->
+                                                                                {% for internal, score in result|search:'internal' %}
+                                                                                    <div style="text-align: center;font-size: 13px;">
+                                                                                        <p style = "color:#000;" class="Internal{{score|slice:'-4'}}">{{ internal }} : {{score}}</p>
+                                                                                    </div>
+                                                                                    <script>
+                                                                                        var valueInternal = parseFloat("{{score|slice:'-4'}}");
+                                                                                        if(scoreInternal < valueInternal) {
+                                                                                            if(scoreInternal != -1) {
+                                                                                                $(".internal" + String(scoreInternal)).removeClass("internal" + String(scoreInternal));
+                                                                                            }
+                                                                                            scoreInternal = valueInternal;
+                                                                                        } else {
+                                                                                            $(".internal" + String(valueInternal)).removeClass("internal" + String(valueInternal));
+                                                                                        }
+                                                                                        document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ internal }} : {{score}}" + "</td>";
+                                                                                        trcount = trcount + 1;
+                                                                                    </script>
+                                                                                {% endfor %}
+                                                                            {% endif %}
+                                                                        {% endwith %}
+                                                                        <script>
+                                                                            $(".Internal" + String(scoreInternal)).css({'color':'blue', "font-weight":"bold"}).removeClass("Internal" + String(scoreInternal));
+                                                                        </script>
+                                                                    {% endif %} 
+                                                                {% endwith %}
+                                                            {% endwith %}
+                                                        </td>
+                                                        <!-- comet tail 검사 결과 표시 -->
+                                                        <td>
+                                                            {% with classi_text_path as text_file%}
+                                                                {% with text_file|history_view as grade%}
+                                                                    <!-- K-TIRADS가 C2이고 name이 Colloid인 경우 C2 internal content 점수 사용 -->
+                                                                    {% if "C2" in grade %}
+                                                                        <script>
+                                                                            var trcount = 1;
+                                                                        </script>
+                                                                        
+                                                                        {% for internal2, score in result|search:'internal2' %}
+                                                                            {% if "Colloid" in internal2 %}
+                                                                                <!--  absent | 100 - colloid 점수 -->
+                                                                                <!-- present | colloid 점수 -->
+                                                                                {% with score|back as score2%}
+                                                                                    <div style="text-align: center;font-size: 13px;">
+                                                                                        <p style = "color:#000;" class="Comet{{score2|filesizeformat|slice:'-4'}}">absent : {{score2}}%</p>
+                                                                                        <p style = "color:#000;" class="Comet{{score|slice:'-4'}}">present : {{score}}</p>
+                                                                                    </div>
+                                                                                    <script>
+                                                                                        if(parseFloat("{{score2|filesizeformat|slice:'-4'}}") > parseFloat("{{score|slice:'-4'}}") ) {
+                                                                                            $(".Comet{{score2|filesizeformat|slice:'-4'}}").css({'color':'blue', "font-weight":"bold"}).removeClass("Comet{{score2|filesizeformat|slice:'-4'}}");
+                                                                                            $(".Comet{{score|slice:'-4'}}").removeClass("Comet{{score|slice:'-4'}}");
+                                                                                        } else {
+                                                                                            $(".Comet{{score2|filesizeformat|slice:'-4'}}").removeClass("Comet{{score2|filesizeformat|slice:'-4'}}");
+                                                                                            $(".Comet{{score|slice:'-4'}}").css({'color':'blue', "font-weight":"bold"}).removeClass("Comet{{score|slice:'-4'}}");
+                                                                                        }
+                                                                                </script>
+                                                                                {% endwith %}
+                                                                                <script>
+                                                                                    document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "Present : {{score}}" + "</td>";
+                                                                                    trcount = trcount + 1;
+                                                                                </script>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    {% else %}
+                                                                        <!-- K-TIRADS가 C2가 아닌경우  absent | 100%, present | 0%로 반환 -->
+                                                                        <script>
+                                                                            var trcount = 1;
+                                                                        </script>
+                                                                            <!-- 검사결과가 텍스트 파일에 존재하는 경우 -->
+                                                                            <!-- 자세한 코드는 history/templatetags/filters.py | is_None 코드 참조 -->
+                                                                            {% with result|is_None as is_none%}
+                                                                                {% if not is_none %}
+                                                                                    <div style="text-align: center;font-size: 13px;">
+                                                                                        <p style = "color:blue; font-weight:bold"> absent : 100.00% </p>
+                                                                                        <p style = "color:#000;" > present : 0.00% </p>
+                                                                                    </div>
+                                                                                    <script>
+                                                                                        document.getElementById("tr" + trcount + "-2").innerHTML += "<td>" + "{{ comettail }} : {{score}}" + "</td>";
+                                                                                        trcount = trcount + 1;
+                                                                                    </script>
+                                                                                {% endif %}
+                                                                            {% endwith %}
+                                                                    {% endif %}
+                                                                {% endwith %}
+                                                            {% endwith %}
+                                                        </td>
+                                                        <td>
+                                                            <script>
+                                                                var trcount = 1;
+                                                            </script>
+                                                            {% for result in result %}
+                                                                <div style="text-align: center;font-size: 13px;">
+                                                                    <p style = "color:#000;"></p>
+                                                                </div>
+                                                                <script>
+                                                                    document.getElementById("tr" + trcount + "-4").innerHTML += "<td>" + "{{ result }}" + "</td>";
+                                                                    trcount = trcount + 1;
+                                                                </script>
+                                                            {% endfor %}
+                                                        </td>
+                                                    {% elif "grade" in name %}
+                                                        
+                                                        <!-- K-TIRADS 검사결과를 표시해주는 부분  -->
+                                                        <script>
+                                                            var trcount = 1;
+                                                            var scoreGrade = -1;
+                                                        </script>
+                                                        <!-- search |  두번째 인자값에 따라 검사결과를 표시해주는 함수-->
+                                                        <!-- 자세한 코드는 history/templatetags/filters.py | search 코드 참조 -->    
+                                                        <td style=" background-color : #ededed;  border-collapse: collapse; border-right: 3px solid #168; border-left: 3px solid #168; border-bottom: 3px solid #168;">
+                                                            {% for grade, score in result|search:'grade' %}
+                                                                <!-- K-TIRADS 검사 결과 표시 -->
+                                                                <br>
+                                                                <div style="text-align: center;font-size: 13px; ">
+                                                                    <p style = "color:#000;" class="Grade{{score|slice:'-4'}}">{{ grade }} : {{score}}</p>
+                                                                </div>
+                                                                <script>
+                                                                    var valueGrade = parseFloat("{{score|slice:'-4'}}");
+                                                                    if(scoreGrade < valueGrade) {
+                                                                        if(scoreGrade != -1) {
+                                                                            $(".Grade" + String(scoreGrade)).removeClass("Grade" + String(scoreGrade));
+                                                                        }
+                                                                        scoreGrade = valueGrade;
+                                                                    } else {
+                                                                        $(".Grade" + String(valueGrade)).removeClass("Grade" + String(valueGrade));
+                                                                    }
+                                                                    $('.tr'+trcount).html("<td>" + "{{ grade }} : {{score}}" + "</td>");
+                                                                    trcount = trcount + 1;
+                                                                </script>
+                                                            {% endfor %}
+                                                        </td>
+                                                        <script>
+                                                            $(".Grade" + String(scoreGrade)).css({'color':'blue', "font-weight":"bold"}).removeClass("Grade" + String(scoreGrade));
+                                                        </script>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                </tr></tbody></table>
+                                            </div>
+
+                                            <div style="margin-top: 10px;">
+                                                <!-- Tagging 부분-->
+                                                <!-- model Tagging, 1,2,3으로 4개를 추가하여 views에서 player로 반환함  -->
+                                                <!-- 검출된 결절 개수에 따라서 태깅 모델을 출력-->
+                                                <!--
+                                                    tagging - tagging2 nodule1
+                                                    tagging3 - tagging5 nodule2
+                                                    tagging6 - tagging8 nodule3
+                                                    tagging9 - tagging11 nodule4
+                                                -->
+
+                                                
+                                                    {% with forloop.counter as idx %}
+                                                        {% if forloop.counter == 1 %}
+                                                            <table style="font-size: 13px; table-layout: fixed;" class="table table-striped table-bordered sortable-table clickable-table" id="problemset">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="text-align:center;width:10%">nodule_idx1</th>
+                                                                        <th style="text-align:center;width:60%">Tagging{{forloop.counter}}</th>
+                                                                        <th colspan="3" style="text-align:center;width:30%">동의여부 </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for player in players %} 
+                                                                        <tr>
+                                                                            <td style="vertical-align:middle;width:70%">nodule{{ idx }}</td>
+                                                                            <td style="vertical-align:middle;width:70%">
+                                                                                <div class="progress progress-striped active" style="margin-bottom: 0px;">
+                                                                                    {% with percent=100 %}
+                                                                                        <div class="progress-bar pb{{patient.id}}" style="width: 50%;"><span style="vertical-align:middle">{{ player.total_likes }}</span></div>
+                                                                                        {#<div class="progress-bar progress-bar-success" style="width: 100%;">1</div>#}
+                                                                                        <div class="progress-bar bg-danger pb1{{patient.id}}" style="width: 50%;"><span style="vertical-align:middle">{{ player.total_dislikes }}</span></div>
+                                                                                        {#<div class="progress-bar progress-bar-success" style="width: 100%;">1</div>#}
+                                                                                    {% endwith %}
+                                                                                </div>
+                                                                            </td>
+                                                                            <td style="vertical-align:middle; text-align: center;">
+                                                                                <button type="button" align='center' id="{{patient.id}}" name="tagging" class="like btn btn-success glyphicon glyphicon-thumbs-up"> Agree</button>
+                                                                            </td>
+                                                                            <td style="vertical-align:middle; text-align: center;">
+                                                                                <button type="button" align='center' id="{{patient.id}}" name="tagging1" class="dislike btn btn-danger glyphicon glyphicon-thumbs-down"> DisAgree</button>
+                                                                            </td>
+                                                                            <td style="vertical-align:middle; text-align: center;">
+                                                                                <button type="button" align='center' id="{{patient.id}}" name="tagging2" class="tagging_reset btn btn-secondary">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                                                                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"></path>
+                                                                                        <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"></path>
+                                                                                    </svg>
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    {% endfor %}
+                                                                </tbody>
+                                                            </table>
+                                                        {% elif forloop.counter == 2 %}
+                                                            {% with forloop.counter as idx %}
+                                                                <table style="font-size: 13px; table-layout: fixed;" class="table table-striped table-bordered sortable-table clickable-table" id="problemset">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th style="text-align:center;width:10%">nodule_idx2</th>
+                                                                            <th style="text-align:center;width:60%">Tagging{{forloop.counter}}</th>
+                                                                            <th colspan="3" style="text-align:center;width:30%">동의여부 </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% for player in players1 %}
+                                                                            <tr>
+                                                                                <td style="vertical-align:middle;width:70%">nodule{{ idx }}</td>
+                                                                                <td style="vertical-align:middle;width:70%">
+                                                                                    <div class="progress progress-striped active" style="margin-bottom: 0px;">
+                                                                                        {% with percent=100 %}
+                                                                                            <div class="progress-bar pb3{{patient.id}}" style="width: 50%;"><span style="vertical-align:middle">{{ player.total_likes1 }}</span></div>
+                                                                                            {#<div class="progress-bar progress-bar-success" style="width: 100%;">1</div>#}
+                                                                                            <div class="progress-bar bg-danger pb4{{patient.id}}" style="width: 50%;"><span style="vertical-align:middle">{{ player.total_dislikes1 }}</span></div>
+                                                                                            {#<div class="progress-bar progress-bar-success" style="width: 100%;">1</div>#}
+                                                                                        {% endwith %}
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td style="vertical-align:middle; text-align: center;">
+                                                                                    <button type="button" align='center' id="{{patient.id}}" name="tagging3" class="like1 btn btn-success glyphicon glyphicon-thumbs-up"> Agree</button>
+                                                                                </td>
+                                                                                <td style="vertical-align:middle; text-align: center;">
+                                                                                    <button type="button" align='center' id="{{patient.id}}" name="tagging4" class="dislike1 btn btn-danger glyphicon glyphicon-thumbs-down"> DisAgree</button>
+                                                                                </td>
+                                                                                <td style="vertical-align:middle; text-align: center;">
+                                                                                    <button type="button" align='center' id="{{patient.id}}" name="tagging5" class="tagging_reset1 btn btn-secondary">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                                                                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"></path>
+                                                                                            <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"></path>
+                                                                                        </svg>
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            {% endwith %}
+                                                        {% elif forloop.counter == 3%}
+                                                            {% with forloop.counter as idx %}
+                                                                <table style="font-size: 13px; table-layout: fixed;" class="table table-striped table-bordered sortable-table clickable-table" id="problemset">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th style="text-align:center;width:10%">nodule_idx3</th>
+                                                                            <th style="text-align:center;width:60%">Tagging{{forloop.counter}}</th>
+                                                                            <th colspan="3" style="text-align:center;width:30%">동의여부 </th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% for player in players2 %}
+                                                                            <tr>
+                                                                                <td style="vertical-align:middle;width:70%">nodule{{ idx }}</td>
+                                                                                <td style="vertical-align:middle;width:70%">
+                                                                                    <div class="progress progress-striped active" style="margin-bottom: 0px;">
+                                                                                        {% with percent=100 %}
+                                                                                            <div class="progress-bar pb5{{patient.id}}" style="width: 50%;"><span style="vertical-align:middle">{{ player.total_likes2 }}</span></div>
+                                                                                            {#<div class="progress-bar progress-bar-success" style="width: 100%;">1</div>#}
+                                                                                            <div class="progress-bar bg-danger pb6{{patient.id}}" style="width: 50%;"><span style="vertical-align:middle">{{ player.total_dislikes2 }}</span></div>
+                                                                                            {#<div class="progress-bar progress-bar-success" style="width: 100%;">1</div>#}
+                                                                                        {% endwith %}
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td style="vertical-align:middle; text-align: center;">
+                                                                                    <button type="button" align='center' id="{{patient.id}}" name="tagging6" class="like2 btn btn-success glyphicon glyphicon-thumbs-up"> Agree</button>
+                                                                                </td>
+                                                                                <td style="vertical-align:middle; text-align: center;">
+                                                                                    <button type="button" align='center' id="{{patient.id}}" name="tagging7" class="dislike2 btn btn-danger glyphicon glyphicon-thumbs-down"> DisAgree</button>
+                                                                                </td>
+                                                                                <td style="vertical-align:middle; text-align: center;">
+                                                                                    <button type="button" align='center' id="{{patient.id}}" name="tagging8" class="tagging_reset2 btn btn-secondary">
+                                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                                                                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"></path>
+                                                                                            <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"></path>
+                                                                                        </svg>
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            {% endwith %}
+                                                        {% else %}
+                                                            <table style="font-size: 13px; table-layout: fixed;" class="table table-striped table-bordered sortable-table clickable-table" id="problemset">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="text-align:center;width:10%">nodule_idx</th>
+                                                                        <th style="text-align:center;width:60%">Tagging{{forloop.counter}}</th>
+                                                                        <th colspan="3" style="text-align:center;width:30%">동의여부 </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {% for player in players3 %}
+                                                                        <tr>
+                                                                            <td style="vertical-align:middle;width:70%">nodule{{ idx }}</td>
+                                                                            <td style="vertical-align:middle;width:70%">
+                                                                                <div class="progress progress-striped active" style="margin-bottom: 0px;">
+                                                                                    {% with percent=100 %}
+                                                                                    <div class="progress-bar pb7{{patient.id}}" style="width: 50%;"><span style="vertical-align:middle">{{ player.total_likes3 }}</span></div>
+                                                                                    <div class="progress-bar bg-danger pb8{{patient.id}}" style="width: 50%;"><span style="vertical-align:middle">{{ player.total_dislikes3 }}</span></div>
+                                                                                    {% endwith %}
+                                                                                </div>
+                                                                            </td>
+                                                                            <td style="vertical-align:middle; text-align: center;">
+                                                                                <button type="button" align='center' id="{{patient.id}}" name="tagging9" class="like3 btn btn-success glyphicon glyphicon-thumbs-up"> Agree</button>
+                                                                            </td>
+                                                                            <td style="vertical-align:middle; text-align: center;">
+                                                                                <button type="button" align='center' id="{{patient.id}}" name="tagging10" class="dislike3 btn btn-danger glyphicon glyphicon-thumbs-down"> DisAgree</button>
+                                                                            </td>
+                                                                            <td style="vertical-align:middle; text-align: center;">
+                                                                                <button type="button" align='center' id="{{patient.id}}" name="tagging11" class="tagging_reset3 btn btn-secondary">
+                                                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
+                                                                                    <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"></path>
+                                                                                    <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"></path>
+                                                                                </svg>
+                                                                            </button>
+                                                                            </td>
+                                                                        </tr>
+                                                            
+                                                                </tbody>
+                                                        {% endfor %}
+                                                    </table>
+                                                    {% endif %}
+                                                    {% endwith %}
+                                                    
+                                                    
+                                                </div>
+
+                                            </div>
+                                            {% endwith %}
+                                            {% empty %} <!-- value 없는 경우의 처리 -->
+                                            <p>개발단계</p>
+
+                                        {% endfor %}
+                                        
+                                    
+                                    <div id="comment" class="tab-content">
+                                        <h6 class="h6_comment"></h6>
+                                        <script>
+                                            var ment_cnt = {{ments|length}}
+                                            
+                                            {% for comment in ments %}
+                                                {%if not comment.interpretation == None or comment.body == None %} 
+                                                    ment_cnt -= 1
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            if (ment_cnt <= 0) {
+                                                ment_cnt = 0
+                                            }
+
+                                            $(".h6_comment").html("<h6>댓글 목록 " + ment_cnt + " 개</h6>").removeClass("h6_comment");
+                                        </script>
+
+                                        <table style="font-size: 13px" class="table table-striped table-bordered sortable-table clickable-table" id="problemset">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center; width:20%;" data-sort="string">User</th>
+                                                    <th style="text-align:center; width:20%;">Date</th>
+                                                    <th style="text-align:center; width:50%;">Comment</th>
+                                                    <th style="text-align:center; width:50%;">Delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="tbody-comment">
+                                                {% for comment in ments %}
+                                                    {% if not comment.body == None and comment.interpretation == None  %}
+                                                        <tr>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.user }}</td>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.date }}</td>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.body }}</td>
+                                                            <td align="center" width="50">
+                                                                <a href="{% url ' src:ment_delete' patient.id comment.id  %}" method="POST">
+                                                                    <button type="button" class="btn btn-outline-secondary">Delete</button>
+                                                                </a>
+                                                            </td>
+                                                            {% csrf_token %}
+                                                        </tr>
+                                                    {% endif %}
+                                                    {%comment%}
+                                                    {% empty %} 
+                                                        <!-- 댓글 없는 경우의 처리 -->
+                                                        <tr>
+                                                            <td colspan="4" align="center" style="vertical-align:middle;">아직 코멘트가 없습니다.</td>
+                                                        <tr>
+                                                    {%endcomment%}
+                                                    
+                                                {% endfor %}
+                                                <script>
+                                                    if (ment_cnt == 0) {
+                                                        var insertMent = "";
+                                                        
+                                                        insertMent += '<tr>';
+                                                        insertMent += '<td colspan="4" align="center" style="vertical-align:middle;">아직 코멘트가 없습니다.</td>';
+                                                        insertMent += '</tr>';
+
+                                                        $("tbody.tbody-comment").append(insertMent).removeClass("tbody-comment");
+                                                    }
+                                                </script>
+                                            </tbody>
+                                        </table>
+                                        <form action ="{% url ' src:detail2' patient.id %}" method="POST" style="text-align:center; width: 100%;">
+                                            {% csrf_token %}
+                                            <textarea name="body"  cols="40" rows="10" maxlength="200"  class="form-control" id="id_body" placeholder="Comment..." required ></textarea>
+                                                    <input type="submit" class="comment_save" value="Save"></input>
+                                        </form>
+                                    </div>
+                                    <div id="pandok" class="tab-content">
+                                        <h6>* 판독문은 진단의만 작성할 수 있습니다 *</h6>
+                                        <table style="font-size: 13px" class="table table-striped table-bordered sortable-table clickable-table" id="problemset">
+                                            {% csrf_token %}
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align:center; width:20%;" data-sort="string">User</th>
+                                                    <th style="text-align:center; width:20%">Date</th>
+                                                    <th align="text-align:center; width:400px;" style="text-align:center; width:50%; ">Interpretation</th>
+                                                    <th style="text-align:center; width:50%;">Delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="tbody-interpretation">
+                                                {% for comment in ments %}
+                                                    {% if not comment.interpretation == None and comment.body == None %}
+                                                        <!-- 판독문이 있을 경우 -->
+                                                        <tr>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.user }}</td>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.date }}</td>
+                                                            <td style="vertical-align:middle" class="click-this">{{ comment.interpretation }}</td>
+                                                            <td align="center" width="50">
+                                                                <a href="{% url ' src:ment_delete' patient.id comment.id  %}" method="POST">
+                                                                    <button type="button" class="btn btn-outline-secondary">Delete</button>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    
+                                                    {% endif %}
+                                                    {%comment%}
+                                                    {% empty %} 
+                                                        <!-- 댓글 없는 경우의 처리 -->
+                                                        <tr>
+                                                            <td colspan="4" align='center' style="vertical-align: middle;">아직 태깅이 없습니다.</td>
+                                                        <tr>
+                                                    {%endcomment%}
+                                                {% endfor %}
+                                                <script>
+                                                    var ment_cnt = {{ments|length}}
+    
+                                                    {% for comment in ments %}
+                                                        {% if not comment.body == None or comment.interpretation == None  %} 
+                                                            ment_cnt -= 1
+                                                        {% endif %}
+                                                    {% endfor %}
+    
+                                                    if (ment_cnt <= 0) {
+                                                        ment_cnt = 0
+                                                    }
+    
+                                                    if (ment_cnt == 0) {
+                                                        var insertMent = "";
+                                                        
+                                                        insertMent += '<tr>';
+                                                        insertMent += '<td colspan="4" align="center" style="vertical-align: middle;">아직 태깅이 없습니다.</td>';
+                                                        insertMent += '</tr>';
+    
+                                                        $("tbody.tbody-interpretation").append(insertMent).removeClass("tbody-interpretation");
+                                                    }
+                                                </script>
+                                            </tbody>
+                                        </table>
+                                        <form  action ="{% url ' src:detail2' patient.id %}" method="POST" >
+                                            {% csrf_token %}
+                                            <textarea name="interpretation" cols="40" rows="10" maxlength="200"  class="form-control" id="id_interpretation" placeholder="interpretation..." required></textarea>
+                                            <a href="{% url ' src:detail2' patient.id %}" method="POST">
+                                                <span class="text">
+                                                    <input type = "submit" class="interpretation_save" value = "Save">
+                                                </span>
+                                            </a>
+                                        </form>
+                                    </div>
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+    <!-- End of Main Content -->
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+                <span>LTLUX &copy; LTLUX 2020</span>
+            </div>
+        </div>
+    </footer>
+    <!-- End of Footer -->
+</div>
+
+<!-- Bootstrap core JavaScript-->
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script src="{% static 'js/tagging.js' %}"></script>
+<script src = '{% static "js/jquery-3.3.1.slim.min.js" %}'></script>
+
+<style>
+    #test_obj {
+        position: absolute;
+        width: 550px;
+        height: 660px;
+        right: 50px;
+        border-radius: 70px;
+        top: 70px;
+        bottom: 250px;
+        border: 1px solid #dddddd;
+    }
+    
+    ul.tabs{
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    ul.tabs li{
+        background: none;
+        color: #222;
+        display: inline-block;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+
+    ul.tabs li.current{
+        background: #ededed;
+        color: #222;
+    }
+
+    .tab-content{
+        display: none;
+        background: #ededed;
+        padding: 15px;
+    }
+
+    .tab-content.current{
+        display: inherit;
+    }
+
+</style>
+
+<style>
+    /* 툴팁 기본 스타일 설정 시작 */
+
+    .tool {
+        position: relative;
+        display: block;
+    }
+
+    .tool .tooltext {
+        visibility: hidden;
+        width: 500px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        border-bottom: 30px;
+        padding: 5px 0;
+
+        position: absolute;
+        z-index: 1;
+    }
+
+    .tool:hover .tooltext {
+        visibility: visible;
+    }
+
+    .tool .tool-bottom {
+        width: 500px;
+        top: 150%;
+        left: 5%;
+        margin-left: -150px;
+    }
+        
+        
+    .tool .tool-bottom::after {
+        bottom: 100%;
+        left: 5%;
+        margin-left: -150px;
+        border-color: transparent transparent black transparent;
+    }
+
+</style>
+
+
+<script>
+//nodule1
+$(document).ready(function () {
+    //$('[name=tagging]').each(function () {
+    $('.like').each(function () {
+
+        let pk = $(this).attr('id');            
+        $.ajax({
+            type: "POST",
+            url: "{% url ' src:like_ready' %}",
+            data: {
+                'pk': pk,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            async: false,
+            
+            success: function(response) {
+    
+                //$('.like').attr('disabled', true);
+                //$('.dislike').attr('disabled', true);
+                //$('.tagging_reset').attr('disabled', true);
+
+                $('.pb'+pk).css('width', (response.Tag_count/{{ all_member }})*100+'%');
+                $('.pb'+pk+' span').text(response.Tag_count);
+                
+                {% comment %} $('#'+pk).text(response.message+' ').attr('class', (response.message!=="Cancel ")?'like btn btn-success glyphicon glyphicon-thumbs-up':'like btn btn-danger glyphicon glyphicon-thumbs-down'); {% endcomment %}
+                $('#'+pk).text(' ' + response.message);
+                
+                like_var1 = response.message;
+
+                //if (response.message == "Cancel "){
+                    
+                if (response.Tag_count == '0') {
+                    //alert(response.Tag_count);
+                    $('.like').attr('disabled', false);
+                    //$('.dislike').attr('disabled', false);
+                    //$('.tagging_reset').attr('disabled', true);
+                }
+                /*
+                else{
+                    $('.like').attr('disabled', true);
+                    $('.dislike').attr('disabled', true);
+                    $('.tagging_reset').attr('disabled', false);
+                }*/
+                
+                if(dday>0){
+                    $('#'+pk).attr('class', (response.message !== "Cancel ") ? 'like btn btn-success glyphicon glyphicon-thumbs-up' : 'like btn btn-danger glyphicon glyphicon-thumbs-down');
+                }
+                else{
+                    
+                    $('#'+pk).attr('class', (response.message !== "Cancel ") ? 'like btn btn-success glyphicon glyphicon-thumbs-up disabled' : 'like btn btn-danger glyphicon glyphicon-thumbs-down disabled').attr('disabled', 'disabled');
+                }
+            },
+            error: function(request, status, error) {
+                console.log("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+            }
+            
+        });
+        
+    })
+
+});
+
+{% comment %} 버튼을 눌렀을 때 Like {% endcomment %}
+{% if user.is_authenticated %}
+$('.like').click(function() {
+    
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:like' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        
+        success: function(response) {
+            //$('.like').attr('disabled', true);
+            //$('.dislike').attr('disabled', true);
+            //$('.tagging_reset').attr('disabled', true);
+
+            $('.pb'+pk).css('width', (response.Tag_count/{{ all_member }})*100+'%');
+            $('.pb'+pk+' span').text(response.Tag_count);
+
+            {% comment %} $('#'+pk).text(response.message+' ').attr('class', (response.message!=="Cancel ")?'like btn btn-success glyphicon glyphicon-thumbs-up':'like btn btn-danger glyphicon glyphicon-thumbs-down'); {% endcomment %}
+            
+            if(response.message == " Agree ") {
+                $('.like').attr('disabled', true);
+                $('.dislike').attr('disabled', true);
+                $('.tagging_reset').attr('disabled', false);
+            }
+            
+            //if (response.message == "Cancel "){
+
+                /*
+            if (response.Tag_count == '1' ){
+                
+                $('.like').attr('disabled', true);
+                $('.dislike').attr('disabled', true);
+                $('.tagging_reset').attr('disabled', false);
+
+            } */
+            /*
+            else {
+                $('.like').attr('disabled', false);
+                //$('.dislike').attr('disabled', false);
+                $('.tagging_reset').attr('disabled', true);
+            }*/
+        },
+        error: function(request, status, error) {
+            alert("로그인이 필요합니다.");
+            console.log("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+})
+
+{% endif %}
+
+{% comment %} DisLike데이터 전달 후 else {% endcomment %}
+
+
+
+$(document).ready(function () {
+    $('[name=tagging1]').each(function () {
+        let pk = $(this).attr('id');
+        $.ajax({
+            type: "POST",
+            url: "{% url ' src:dislike_ready' %}",
+            data: {
+                'pk': pk,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            async: false,
+
+            success: function(response) {
+                //$('.like').attr('disabled', true);
+                //$('.dislike').attr('disabled', true);
+                //$('.tagging_reset').attr('disabled', true);
+
+                $('.pb1'+pk).css('width', (response.Tags_default/{{ all_member }})*100+'%');
+                $('.pb1'+pk+' span').text(response.Tags_default);
+                
+                {% comment %} $('.dislike').text(response.message1+' ').attr('class', (response.message1!=="Cancel ")?'dislike btn btn-danger glyphicon glyphicon-thumbs-down':'dislike btn btn-success glyphicon glyphicon-thumbs-up');
+                $('.dislike').text(' ' + response.message1); {% endcomment %}
+
+
+                if(response.message1 == "DisAgree " && like_var1 == "Agree ") {
+                    $('.like').attr('disabled', false);
+                    $('.dislike').attr('disabled', false);
+                    $('.tagging_reset').attr('disabled', true);
+                }
+                else if(response.message1 == "DisAgree " && like_var1 == " Agree "){
+                    $('.like').attr('disabled', true);
+                    $('.dislike').attr('disabled', true);
+                    $('.tagging_reset').attr('disabled', false);
+                }
+                else {
+                    $('.like').attr('disabled', true);
+                    $('.dislike').attr('disabled', true);
+                    $('.tagging_reset').attr('disabled', false);
+                }
+
+
+                //if (response.message1 == "Cancel "){
+                /*
+                if (response.Tags_default == '0' && like_var1 == '0'){
+                    alert(response.Tags_default);
+                    $('.like').attr('disabled', false);
+                    $('.dislike').attr('disabled', false);
+                    $('.tagging_reset').attr('disabled', true);
+                } 
+
+                else if (response.Tags_default == '0' && like_var1 == '1') {
+                    $('.like').attr('disabled', true);
+                    $('.dislike').attr('disabled', true);
+                    $('.tagging_reset').attr('disabled', false);
+                }
+
+                else{
+                    $('.like').attr('disabled', true);
+                    $('.dislike').attr('disabled', true);
+                    $('.tagging_reset').attr('disabled', false);
+                }
+                */
+                if(dday>0){
+                    $('.dislike').attr('class', (response.message1 !== "Cancel ") ? 'dislike btn btn-danger glyphicon glyphicon-thumbs-down' : 'dislike btn btn-success glyphicon glyphicon-thumbs-up');
+                }
+                else{
+                    $('.dislike').attr('class', (response.message1 !== "Cancel ") ? 'dislike btn btn-danger glyphicon glyphicon-thumbs-down disabled' : 'dislike btn btn-success glyphicon glyphicon-thumbs-up disabled').attr('disabled', 'disabled');
+                }
+            },
+            error: function(request, status, error) {
+                console.log("code:" + request.status + "\n" + "message1:" + request.responseText + "\n" + "error:" + error);
+            }
+        });
+        
+    })
+});
+
+
+
+
+
+{% comment %} 버튼을 눌렀을 때 DisLike     {% endcomment %}
+
+
+
+{% if user.is_authenticated %}
+$('.dislike').click(function() {
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:dislike' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function(response) {
+            //$('.like').attr('disabled', true);
+            //$('.dislike').attr('disabled', true);
+            //$('.tagging_reset').attr('disabled', true);
+            
+            $('.pb1'+pk).css('width', (response.Tags_default/{{ all_member }})*100+'%');
+            $('.pb1'+pk+' span').text(response.Tags_default);
+            
+            {% comment %} $('.dislike').text(response.message1+' ').attr('class', (response.message1!=="Cancel ")?'dislike btn btn-danger glyphicon glyphicon-thumbs-down':'dislike btn btn-success glyphicon glyphicon-thumbs-up'); {% endcomment %}
+            //if (response.message1 == "Cancel "){
+            if (response.Tags_default !== '0'){
+                $('.like').attr('disabled', true);
+                $('.dislike').attr('disabled', true);
+                $('.tagging_reset').attr('disabled', false);
+            } 
+            /*
+            else{
+                //$('.like').attr('disabled', false);
+                $('.dislike').attr('disabled', false);
+                $('.tagging_reset').attr('disabled', true);
+            }
+            */
+        },
+        error: function(request, status, error) {
+            alert("로그인이 필요합니다.");
+            console.log("code:" + request.status + "\n" + "message1:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+})
+
+{% endif %}
+
+{% if user.is_authenticated %}
+$('.tagging_reset').click(function() {
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:tagging_reset_like' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function(response) {
+            
+            $('.pb'+pk).css('width', (response.Tag_count/{{ all_member }})*100+'%');
+            $('.pb'+pk+' span').text(response.Tag_count);
+            $('.like').attr('disabled', false);
+            $('.dislike').attr('disabled', false);
+            $('.tagging_reset').attr('disabled', true);
+            
+        },
+        error: function(request, status, error) {
+            alert("로그인이 필요합니다.");
+            console.log("code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+})
+
+{% endif %}
+
+{% if user.is_authenticated %}
+$('.tagging_reset').click(function() {
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:tagging_reset_dislike' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        success: function(response) {
+            $('.pb1'+pk).css('width', (response.Tags_default/{{ all_member }})*100+'%');
+            $('.pb1'+pk+' span').text(response.Tags_default);
+            
+        },
+        error: function(request, status, error) {
+            alert("로그인이 필요합니다.");
+            console.log("code:" + request.status + "\n" + "message1:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+})
+
+{% endif %}
+
+
+
+$(document).ready(function () {
+    
+    var tmp = parseInt($("#test_obj").css('top'));
+    
+    $(window).scroll(function () {
+        var scrollTop = $(window).scrollTop();
+        var obj_position = scrollTop + tmp + "px";
+
+        $("#test_obj").stop().animate({
+            "top": obj_position
+        }, 500);
+        
+    }).scroll();
+});
+
+$(document).ready(function() {
+     $('ul.tabs li').click(function(){
+        var tab_id = $(this).attr('data-tab');
+
+        $('ul.tabs li').removeClass('current');
+        $('.tab-content').removeClass('current');
+     
+        $(this).addClass('current');
+        $("#"+tab_id).addClass('current');
+      })
+
+});
+
+$(document).ready(function(){ 
+    //이벤트 발생 전 선택된 값 
+    var preValue = $("input[name='radio_like']:checked").val(); 
+    //클릭 이벤트 발생 
+        $("input[name='radio_like']").click(function()
+        { 
+            if(confirm("변경하시겠습니까?") == false) {
+                 //체크 해제 
+                 $(this).prop('checked', false); 
+                 //이전 라디오버튼 체크 
+                 $("input[name='radio_like']:radio[value='" + preValue + "']").prop('checked', true); 
+                 return; 
+            } 
+            preValue = $(this).val(); 
+        }); 
+    });
+
+
+    
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//nodule2
+
+
+$(document).ready(function () {
+    //$('[name=tagging]').each(function () {
+    $('.like1').each(function () {
+        let pk = $(this).attr('id');            
+        $.ajax({
+            type: "POST",
+            url: "{% url ' src:like_ready1' %}",
+            data: {
+                'pk': pk,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            async: false,
+            
+            success: function(response) {
+                
+                //$('.like1').attr('disabled', true);
+                //$('.dislike1').attr('disabled', true);
+                //$('.tagging_reset1').attr('disabled', true);
+
+                $('.pb3'+pk).css('width', (response.Tag_count1/{{ all_member }})*100+'%');
+                $('.pb3'+pk+' span').text(response.Tag_count1);
+                
+                {% comment %} $('#'+pk).text(response.message3+' ').attr('class', (response.message3!=="Cancel ")?'like1 btn btn-success glyphicon glyphicon-thumbs-up':'like1 btn btn-danger glyphicon glyphicon-thumbs-down'); {% endcomment %}
+                $('#'+pk).text(' ' + response.message3);
+                
+                like_var2 = response.message3;
+
+                //if (response.message == "Cancel "){
+                if (response.Tag_count1 == '0') {
+                    $('.like1').attr('disabled', false);
+                    //$('.dislike1').attr('disabled', false);
+                    //$('.tagging_reset').attr('disabled', true);
+                }
+                /*
+                else{
+                    $('.like').attr('disabled', true);
+                    $('.dislike').attr('disabled', true);
+                    $('.tagging_reset').attr('disabled', false);
+                }*/
+                
+                if(dday>0){
+                    $('#'+pk).attr('class', (response.message3 !== "Cancel ") ? 'like1 btn btn-success glyphicon glyphicon-thumbs-up' : 'like1 btn btn-danger glyphicon glyphicon-thumbs-down');
+                }
+                else{
+                    $('#'+pk).attr('class', (response.message3 !== "Cancel ") ? 'like1 btn btn-success glyphicon glyphicon-thumbs-up disabled' : 'like1 btn btn-danger glyphicon glyphicon-thumbs-down disabled').attr('disabled', 'disabled');
+                }
+            },
+            error: function(request, status, error) {
+                console.log("code:" + request.status + "\n" + "message3:" + request.responseText + "\n" + "error:" + error);
+            }
+            
+        });
+        
+    })
+
+   
+});
+
+{% comment %} 버튼을 눌렀을 때 Like {% endcomment %}
+{% if user.is_authenticated %}
+$('.like1').click(function() {
+    
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:like1' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        
+        success: function(response) {
+            //$('.like1').attr('disabled', true);
+            //$('.dislike1').attr('disabled', true);
+            //$('.tagging_reset1').attr('disabled', true);
+
+            $('.pb3'+pk).css('width', (response.Tag_count1/{{ all_member }})*100+'%');
+            $('.pb3'+pk+' span').text(response.Tag_count1);
+
+            {% comment %} $('#'+pk).text(response.message3+' ').attr('class', (response.message3!=="Cancel ")?'like1 btn btn-success glyphicon glyphicon-thumbs-up':'like1 btn btn-danger glyphicon glyphicon-thumbs-down'); {% endcomment %}
+            
+            //if (response.message == "Cancel "){
+            if(response.message3 == " Agree ") {
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }
+            /*
+            else {
+                $('.like').attr('disabled', false);
+                //$('.dislike').attr('disabled', false);
+                $('.tagging_reset').attr('disabled', true);
+            }*/
+        },
+        error: function(request, status, error) {
+            alert("로그인이 필요합니다.");
+            console.log("code:" + request.status + "\n" + "message3:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+})
+
+{% endif %}
+
+{% comment %} DisLike데이터 전달 후 else {% endcomment %}
+
+
+
+$(document).ready(function () {
+$('[name=tagging3]').each(function () {
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:dislike_ready1' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        async: false,
+
+        success: function(response) {
+            //$('.like1').attr('disabled', true);
+            //$('.dislike1').attr('disabled', true);
+            //$('.tagging_reset1').attr('disabled', true);
+            
+            $('.pb4'+pk).css('width', (response.Tags_default1/{{ all_member }})*100+'%');
+            $('.pb4'+pk+' span').text(response.Tags_default1);
+            
+            {% comment %} $('.dislike1').text(response.message4+' ').attr('class', (response.message4!=="Cancel ")?'dislike1 btn btn-danger glyphicon glyphicon-thumbs-down':'dislike1 btn btn-success glyphicon glyphicon-thumbs-up');
+            $('.dislike1').text(' ' + response.message4); {% endcomment %}
+
+            //if (response.message1 == "Cancel "){
+
+           
+            
+            //if (response.message == "Cancel "){
+          
+            if(response.message4 == "DisAgree " && like_var2 == "Agree ") {
+                $('.like1').attr('disabled', false);
+                $('.dislike1').attr('disabled', false);
+                $('.tagging_reset1').attr('disabled', true);
+            }
+            else if(response.message4 == "DisAgree " && like_var2 == " Agree "){
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }
+            else {
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }
+
+            /*
+            if (response.Tags_default1 == '0' && like_var2 == '0'){
+                alert(response.Tags_default);
+                $('.like1').attr('disabled', false);
+                $('.dislike1').attr('disabled', false);
+                $('.tagging_reset1').attr('disabled', true);
+            } 
+
+            else if (response.Tags_default1 == '0' && like_var2 == '1') {
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }
+            
+            else{
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }*/
+            if(dday>0){
+                $('.dislike1').attr('class', (response.message4 !== "Cancel ") ? 'dislike1 btn btn-danger glyphicon glyphicon-thumbs-down' : 'dislike1 btn btn-success glyphicon glyphicon-thumbs-up');
+            }
+            else{
+                $('.dislike1').attr('class', (response.message4 !== "Cancel ") ? 'dislike1 btn btn-danger glyphicon glyphicon-thumbs-down disabled' : 'dislike1 btn btn-success glyphicon glyphicon-thumbs-up disabled').attr('disabled', 'disabled');
+            }
+        },
+        error: function(request, status, error) {
+            console.log("code:" + request.status + "\n" + "message4:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+    
+})
+});
+
+
+
+
+
+{% comment %} 버튼을 눌렀을 때 DisLike     {% endcomment %}
+
+
+
+{% if user.is_authenticated %}
+$('.dislike1').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:dislike1' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        //$('.like1').attr('disabled', true);
+        //$('.dislike1').attr('disabled', true);
+        //$('.tagging_reset1').attr('disabled', true);
+        
+        $('.pb4'+pk).css('width', (response.Tags_default1/{{ all_member }})*100+'%');
+        $('.pb4'+pk+' span').text(response.Tags_default1);
+        
+        {% comment %} $('.dislike1').text(response.message4+' ').attr('class', (response.message4!=="Cancel ")?'dislike1 btn btn-danger glyphicon glyphicon-thumbs-down':'dislike1 btn btn-success glyphicon glyphicon-thumbs-up'); {% endcomment %}
+        //if (response.message1 == "Cancel "){
+        if (response.Tags_default1 !== 'DisAgree'){
+            $('.like1').attr('disabled', true);
+            $('.dislike1').attr('disabled', true);
+            $('.tagging_reset1').attr('disabled', false);
+        } 
+        /*
+        else{
+            //$('.like').attr('disabled', false);
+            $('.dislike').attr('disabled', false);
+            $('.tagging_reset').attr('disabled', true);
+        }
+        */
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message4:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+{% if user.is_authenticated %}
+$('.tagging_reset1').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:tagging_reset_like1' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        
+        $('.pb3'+pk).css('width', (response.Tag_count1/{{ all_member }})*100+'%');
+        $('.pb3'+pk+' span').text(response.Tag_count1);
+        $('.like1').attr('disabled', false);
+        $('.dislike1').attr('disabled', false);
+        $('.tagging_reset1').attr('disabled', true);
+
+
+        
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message3:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+{% if user.is_authenticated %}
+$('.tagging_reset1').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:tagging_reset_dislike1' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        $('.pb4'+pk).css('width', (response.Tags_default1/{{ all_member }})*100+'%');
+        $('.pb4'+pk+' span').text(response.Tags_default1);
+        
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message4:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+
+
+$(document).ready(function () {
+
+var tmp = parseInt($("#test_obj").css('top'));
+
+$(window).scroll(function () {
+    var scrollTop = $(window).scrollTop();
+    var obj_position = scrollTop + tmp + "px";
+
+    $("#test_obj").stop().animate({
+        "top": obj_position
+    }, 500);
+    
+}).scroll();
+});
+
+$(document).ready(function() {
+ $('ul.tabs li').click(function(){
+    var tab_id = $(this).attr('data-tab');
+
+    $('ul.tabs li').removeClass('current');
+    $('.tab-content').removeClass('current');
+ 
+    $(this).addClass('current');
+    $("#"+tab_id).addClass('current');
+  })
+
+});
+
+$(document).ready(function(){ 
+//이벤트 발생 전 선택된 값 
+var preValue = $("input[name='radio_like']:checked").val(); 
+//클릭 이벤트 발생 
+    $("input[name='radio_like']").click(function()
+    { 
+        if(confirm("변경하시겠습니까?") == false) {
+             //체크 해제 
+             $(this).prop('checked', false); 
+             //이전 라디오버튼 체크 
+             $("input[name='radio_like']:radio[value='" + preValue + "']").prop('checked', true); 
+             return; 
+        } 
+        preValue = $(this).val(); 
+    }); 
+});
+
+
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//nodule3
+
+$(document).ready(function () {
+    //$('[name=tagging]').each(function () {
+    $('.like2').each(function () {
+        let pk = $(this).attr('id');            
+        $.ajax({
+            type: "POST",
+            url: "{% url ' src:like_ready2' %}",
+            data: {
+                'pk': pk,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            async: false,
+            
+            success: function(response) {
+                
+                //$('.like1').attr('disabled', true);
+                //$('.dislike1').attr('disabled', true);
+                //$('.tagging_reset1').attr('disabled', true);
+
+                $('.pb5'+pk).css('width', (response.Tag_count2/{{ all_member }})*100+'%');
+                $('.pb5'+pk+' span').text(response.Tag_count2);
+                
+                {% comment %} $('#'+pk).text(response.message5+' ').attr('class', (response.message5!=="Cancel ")?'like2 btn btn-success glyphicon glyphicon-thumbs-up':'like2 btn btn-danger glyphicon glyphicon-thumbs-down'); {% endcomment %}
+                $('#'+pk).text(' ' + response.message5);
+                
+                like_var3 = response.message5;
+
+                //if (response.message == "Cancel "){
+                if (response.Tag_count2 == '0') {
+                    $('.like2').attr('disabled', false);
+                    //$('.dislike1').attr('disabled', false);
+                    //$('.tagging_reset').attr('disabled', true);
+                }
+                /*
+                else{
+                    $('.like').attr('disabled', true);
+                    $('.dislike').attr('disabled', true);
+                    $('.tagging_reset').attr('disabled', false);
+                }*/
+                
+                if(dday>0){
+                    $('#'+pk).attr('class', (response.message5 !== "Cancel ") ? 'like2 btn btn-success glyphicon glyphicon-thumbs-up' : 'like2 btn btn-danger glyphicon glyphicon-thumbs-down');
+                }
+                else{
+                    $('#'+pk).attr('class', (response.message5 !== "Cancel ") ? 'like2 btn btn-success glyphicon glyphicon-thumbs-up disabled' : 'like2 btn btn-danger glyphicon glyphicon-thumbs-down disabled').attr('disabled', 'disabled');
+                }
+            },
+            error: function(request, status, error) {
+                console.log("code:" + request.status + "\n" + "message5:" + request.responseText + "\n" + "error:" + error);
+            }
+            
+        });
+        
+    })
+
+   
+});
+
+{% comment %} 버튼을 눌렀을 때 Like {% endcomment %}
+{% if user.is_authenticated %}
+$('.like2').click(function() {
+    
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:like2' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        
+        success: function(response) {
+            //$('.like1').attr('disabled', true);
+            //$('.dislike1').attr('disabled', true);
+            //$('.tagging_reset1').attr('disabled', true);
+
+            $('.pb5'+pk).css('width', (response.Tag_count2/{{ all_member }})*100+'%');
+            $('.pb5'+pk+' span').text(response.Tag_count2);
+
+            {% comment %} $('#'+pk).text(response.message5+' ').attr('class', (response.message5!=="Cancel ")?'like2 btn btn-success glyphicon glyphicon-thumbs-up':'like2 btn btn-danger glyphicon glyphicon-thumbs-down'); {% endcomment %}
+            
+            //if (response.message == "Cancel "){
+            if(response.message5 == " Agree ") {
+                $('.like2').attr('disabled', true);
+                $('.dislike2').attr('disabled', true);
+                $('.tagging_reset2').attr('disabled', false);
+            }
+            /*
+            else {
+                $('.like').attr('disabled', false);
+                //$('.dislike').attr('disabled', false);
+                $('.tagging_reset').attr('disabled', true);
+            }*/
+        },
+        error: function(request, status, error) {
+            alert("로그인이 필요합니다.");
+            console.log("code:" + request.status + "\n" + "message5:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+})
+
+{% endif %}
+
+{% comment %} DisLike데이터 전달 후 else {% endcomment %}
+
+
+
+$(document).ready(function () {
+$('[name=tagging5]').each(function () {
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:dislike_ready2' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        async: false,
+
+        success: function(response) {
+            //$('.like1').attr('disabled', true);
+            //$('.dislike1').attr('disabled', true);
+            //$('.tagging_reset1').attr('disabled', true);
+            
+            $('.pb6'+pk).css('width', (response.Tags_default2/{{ all_member }})*100+'%');
+            $('.pb6'+pk+' span').text(response.Tags_default2);
+            
+            {% comment %} $('.dislike2').text(response.message6+' ').attr('class', (response.message6!=="Cancel ")?'dislike2 btn btn-danger glyphicon glyphicon-thumbs-down':'dislike2 btn btn-success glyphicon glyphicon-thumbs-up');
+            $('.dislike2').text(' ' + response.message6); {% endcomment %}
+
+            //if (response.message1 == "Cancel "){
+
+           
+            
+            //if (response.message == "Cancel "){
+          
+            if(response.message6 == "DisAgree " && like_var3 == "Agree ") {
+                $('.like2').attr('disabled', false);
+                $('.dislike2').attr('disabled', false);
+                $('.tagging_reset2').attr('disabled', true);
+            }
+            else if(response.message6 == "DisAgree " && like_var3 == " Agree "){
+                $('.like2').attr('disabled', true);
+                $('.dislike2').attr('disabled', true);
+                $('.tagging_reset2').attr('disabled', false);
+            }
+            else {
+                $('.like2').attr('disabled', true);
+                $('.dislike2').attr('disabled', true);
+                $('.tagging_reset2').attr('disabled', false);
+            }
+
+            /*
+            if (response.Tags_default1 == '0' && like_var2 == '0'){
+                alert(response.Tags_default);
+                $('.like1').attr('disabled', false);
+                $('.dislike1').attr('disabled', false);
+                $('.tagging_reset1').attr('disabled', true);
+            } 
+
+            else if (response.Tags_default1 == '0' && like_var2 == '1') {
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }
+            
+            else{
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }*/
+            if(dday>0){
+                $('.dislike2').attr('class', (response.message6 !== "Cancel ") ? 'dislike2 btn btn-danger glyphicon glyphicon-thumbs-down' : 'dislike2 btn btn-success glyphicon glyphicon-thumbs-up');
+            }
+            else{
+                $('.dislike2').attr('class', (response.message6 !== "Cancel ") ? 'dislike2 btn btn-danger glyphicon glyphicon-thumbs-down disabled' : 'dislike2 btn btn-success glyphicon glyphicon-thumbs-up disabled').attr('disabled', 'disabled');
+            }
+        },
+        error: function(request, status, error) {
+            console.log("code:" + request.status + "\n" + "message6:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+    
+})
+});
+
+
+
+
+
+{% comment %} 버튼을 눌렀을 때 DisLike     {% endcomment %}
+
+
+
+{% if user.is_authenticated %}
+$('.dislike2').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:dislike2' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        //$('.like1').attr('disabled', true);
+        //$('.dislike1').attr('disabled', true);
+        //$('.tagging_reset1').attr('disabled', true);
+        
+        $('.pb6'+pk).css('width', (response.Tags_default2/{{ all_member }})*100+'%');
+        $('.pb6'+pk+' span').text(response.Tags_default2);
+        
+        {% comment %} $('.dislike2').text(response.message6+' ').attr('class', (response.message6!=="Cancel ")?'dislike2 btn btn-danger glyphicon glyphicon-thumbs-down':'dislike2 btn btn-success glyphicon glyphicon-thumbs-up'); {% endcomment %}
+        //if (response.message1 == "Cancel "){
+        if (response.Tags_default2 !== 'DisAgree'){
+            $('.like2').attr('disabled', true);
+            $('.dislike2').attr('disabled', true);
+            $('.tagging_reset2').attr('disabled', false);
+        } 
+        /*
+        else{
+            //$('.like').attr('disabled', false);
+            $('.dislike').attr('disabled', false);
+            $('.tagging_reset').attr('disabled', true);
+        }
+        */
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message6:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+{% if user.is_authenticated %}
+$('.tagging_reset2').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:tagging_reset_like2' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        
+        $('.pb5'+pk).css('width', (response.Tag_count2/{{ all_member }})*100+'%');
+        $('.pb5'+pk+' span').text(response.Tag_count2);
+        $('.like2').attr('disabled', false);
+        $('.dislike2').attr('disabled', false);
+        $('.tagging_reset2').attr('disabled', true);
+
+
+        
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message5:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+{% if user.is_authenticated %}
+$('.tagging_reset2').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:tagging_reset_dislike2' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        $('.pb6'+pk).css('width', (response.Tags_default2/{{ all_member }})*100+'%');
+        $('.pb6'+pk+' span').text(response.Tags_default2);
+  
+        
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message6:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+
+
+$(document).ready(function () {
+
+var tmp = parseInt($("#test_obj").css('top'));
+
+$(window).scroll(function () {
+    var scrollTop = $(window).scrollTop();
+    var obj_position = scrollTop + tmp + "px";
+
+    $("#test_obj").stop().animate({
+        "top": obj_position
+    }, 500);
+    
+}).scroll();
+});
+
+$(document).ready(function() {
+ $('ul.tabs li').click(function(){
+    var tab_id = $(this).attr('data-tab');
+
+    $('ul.tabs li').removeClass('current');
+    $('.tab-content').removeClass('current');
+ 
+    $(this).addClass('current');
+    $("#"+tab_id).addClass('current');
+  })
+
+});
+
+$(document).ready(function(){ 
+//이벤트 발생 전 선택된 값 
+var preValue = $("input[name='radio_like']:checked").val(); 
+//클릭 이벤트 발생 
+    $("input[name='radio_like']").click(function()
+    { 
+        if(confirm("변경하시겠습니까?") == false) {
+             //체크 해제 
+             $(this).prop('checked', false); 
+             //이전 라디오버튼 체크 
+             $("input[name='radio_like']:radio[value='" + preValue + "']").prop('checked', true); 
+             return; 
+        } 
+        preValue = $(this).val(); 
+    }); 
+});
+
+
+
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//nodule4
+
+$(document).ready(function () {
+    //$('[name=tagging]').each(function () {
+    $('.like3').each(function () {
+        let pk = $(this).attr('id');            
+        $.ajax({
+            type: "POST",
+            url: "{% url ' src:like_ready3' %}",
+            data: {
+                'pk': pk,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            dataType: "json",
+            async: false,
+            
+            success: function(response) {
+                
+                //$('.like1').attr('disabled', true);
+                //$('.dislike1').attr('disabled', true);
+                //$('.tagging_reset1').attr('disabled', true);
+
+                $('.pb7'+pk).css('width', (response.Tag_count3/{{ all_member }})*100+'%');
+                $('.pb7'+pk+' span').text(response.Tag_count3);
+                
+                {% comment %} $('#'+pk).text(response.message7+' ').attr('class', (response.message7!=="Cancel ")?'like3 btn btn-success glyphicon glyphicon-thumbs-up':'like3 btn btn-danger glyphicon glyphicon-thumbs-down'); {% endcomment %}
+                $('#'+pk).text(' ' + response.message7);
+                
+                like_var4 = response.message7;
+
+                //if (response.message == "Cancel "){
+                if (response.Tag_count3 == '0') {
+                    $('.like2').attr('disabled', false);
+                    //$('.dislike1').attr('disabled', false);
+                    //$('.tagging_reset').attr('disabled', true);
+                }
+                /*
+                else{
+                    $('.like').attr('disabled', true);
+                    $('.dislike').attr('disabled', true);
+                    $('.tagging_reset').attr('disabled', false);
+                }*/
+                
+                if(dday>0){
+                    $('#'+pk).attr('class', (response.message7 !== "Cancel ") ? 'like3 btn btn-success glyphicon glyphicon-thumbs-up' : 'like3 btn btn-danger glyphicon glyphicon-thumbs-down');
+                }
+                else{
+                    $('#'+pk).attr('class', (response.message7 !== "Cancel ") ? 'like3 btn btn-success glyphicon glyphicon-thumbs-up disabled' : 'like3 btn btn-danger glyphicon glyphicon-thumbs-down disabled').attr('disabled', 'disabled');
+                }
+            },
+            error: function(request, status, error) {
+                console.log("code:" + request.status + "\n" + "message7:" + request.responseText + "\n" + "error:" + error);
+            }
+            
+        });
+        
+    })
+
+   
+});
+
+{% comment %} 버튼을 눌렀을 때 Like {% endcomment %}
+{% if user.is_authenticated %}
+$('.like3').click(function() {
+    
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:like3' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        
+        success: function(response) {
+            //$('.like1').attr('disabled', true);
+            //$('.dislike1').attr('disabled', true);
+            //$('.tagging_reset1').attr('disabled', true);
+
+            $('.pb7'+pk).css('width', (response.Tag_count3/{{ all_member }})*100+'%');
+            $('.pb7'+pk+' span').text(response.Tag_count3);
+
+            {% comment %} $('#'+pk).text(response.message7+' ').attr('class', (response.message7!=="Cancel ")?'like3 btn btn-success glyphicon glyphicon-thumbs-up':'like3 btn btn-danger glyphicon glyphicon-thumbs-down'); {% endcomment %}
+            
+            //if (response.message == "Cancel "){
+            if(response.message7 == " Agree ") {
+                $('.like3').attr('disabled', true);
+                $('.dislike3').attr('disabled', true);
+                $('.tagging_reset3').attr('disabled', false);
+            }
+            /*
+            else {
+                $('.like').attr('disabled', false);
+                //$('.dislike').attr('disabled', false);
+                $('.tagging_reset').attr('disabled', true);
+            }*/
+        },
+        error: function(request, status, error) {
+            alert("로그인이 필요합니다.");
+            console.log("code:" + request.status + "\n" + "message7:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+})
+
+{% endif %}
+
+{% comment %} DisLike데이터 전달 후 else {% endcomment %}
+
+
+
+$(document).ready(function () {
+$('[name=tagging7]').each(function () {
+    let pk = $(this).attr('id');
+    $.ajax({
+        type: "POST",
+        url: "{% url ' src:dislike_ready3' %}",
+        data: {
+            'pk': pk,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        dataType: "json",
+        async: false,
+
+        success: function(response) {
+            //$('.like1').attr('disabled', true);
+            //$('.dislike1').attr('disabled', true);
+            //$('.tagging_reset1').attr('disabled', true);
+            
+            $('.pb8'+pk).css('width', (response.Tags_default3/{{ all_member }})*100+'%');
+            $('.pb8'+pk+' span').text(response.Tags_default3);
+            
+            {% comment %} $('.dislike3').text(response.message8+' ').attr('class', (response.message8!=="Cancel ")?'dislike3 btn btn-danger glyphicon glyphicon-thumbs-down':'dislike3 btn btn-success glyphicon glyphicon-thumbs-up');
+            $('.dislike3').text(' ' + response.message8); {% endcomment %}
+
+            //if (response.message1 == "Cancel "){
+
+           
+            
+            //if (response.message == "Cancel "){
+          
+            if(response.message8 == "DisAgree " && like_var4 == "Agree ") {
+                $('.like3').attr('disabled', false);
+                $('.dislike3').attr('disabled', false);
+                $('.tagging_reset3').attr('disabled', true);
+            }
+            else if(response.message8 == "DisAgree " && like_var4 == " Agree "){
+                $('.like3').attr('disabled', true);
+                $('.dislike3').attr('disabled', true);
+                $('.tagging_reset3').attr('disabled', false);
+            }
+            else {
+                $('.like3').attr('disabled', true);
+                $('.dislike3').attr('disabled', true);
+                $('.tagging_reset3').attr('disabled', false);
+            }
+
+            /*
+            if (response.Tags_default1 == '0' && like_var2 == '0'){
+                alert(response.Tags_default);
+                $('.like1').attr('disabled', false);
+                $('.dislike1').attr('disabled', false);
+                $('.tagging_reset1').attr('disabled', true);
+            } 
+
+            else if (response.Tags_default1 == '0' && like_var2 == '1') {
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }
+            
+            else{
+                $('.like1').attr('disabled', true);
+                $('.dislike1').attr('disabled', true);
+                $('.tagging_reset1').attr('disabled', false);
+            }*/
+            if(dday>0){
+                $('.dislike3').attr('class', (response.message8 !== "Cancel ") ? 'dislike3 btn btn-danger glyphicon glyphicon-thumbs-down' : 'dislike3 btn btn-success glyphicon glyphicon-thumbs-up');
+            }
+            else{
+                $('.dislike3').attr('class', (response.message8 !== "Cancel ") ? 'dislike3 btn btn-danger glyphicon glyphicon-thumbs-down disabled' : 'dislike3 btn btn-success glyphicon glyphicon-thumbs-up disabled').attr('disabled', 'disabled');
+            }
+        },
+        error: function(request, status, error) {
+            console.log("code:" + request.status + "\n" + "message8:" + request.responseText + "\n" + "error:" + error);
+        }
+    });
+    
+})
+});
+
+
+
+
+
+{% comment %} 버튼을 눌렀을 때 DisLike     {% endcomment %}
+
+
+
+{% if user.is_authenticated %}
+$('.dislike3').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:dislike3' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        //$('.like1').attr('disabled', true);
+        //$('.dislike1').attr('disabled', true);
+        //$('.tagging_reset1').attr('disabled', true);
+        
+        $('.pb8'+pk).css('width', (response.Tags_default3/{{ all_member }})*100+'%');
+        $('.pb8'+pk+' span').text(response.Tags_default3);
+        
+        {% comment %} $('.dislike3').text(response.message8+' ').attr('class', (response.message8!=="Cancel ")?'dislike3 btn btn-danger glyphicon glyphicon-thumbs-down':'dislike3 btn btn-success glyphicon glyphicon-thumbs-up'); {% endcomment %}
+        //if (response.message1 == "Cancel "){
+        if (response.Tags_default3 !== 'DisAgree'){
+            $('.like3').attr('disabled', true);
+            $('.dislike3').attr('disabled', true);
+            $('.tagging_reset3').attr('disabled', false);
+        } 
+        /*
+        else{
+            //$('.like').attr('disabled', false);
+            $('.dislike').attr('disabled', false);
+            $('.tagging_reset').attr('disabled', true);
+        }
+        */
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message8:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+{% if user.is_authenticated %}
+$('.tagging_reset3').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:tagging_reset_like3' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        
+        $('.pb7'+pk).css('width', (response.Tag_count3/{{ all_member }})*100+'%');
+        $('.pb7'+pk+' span').text(response.Tag_count3);
+        $('.like3').attr('disabled', false);
+        $('.dislike3').attr('disabled', false);
+        $('.tagging_reset3').attr('disabled', true);
+
+
+        
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message8:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+{% if user.is_authenticated %}
+$('.tagging_reset3').click(function() {
+let pk = $(this).attr('id');
+$.ajax({
+    type: "POST",
+    url: "{% url ' src:tagging_reset_dislike3' %}",
+    data: {
+        'pk': pk,
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    },
+    dataType: "json",
+    success: function(response) {
+        $('.pb8'+pk).css('width', (response.Tags_default3/{{ all_member }})*100+'%');
+        $('.pb8'+pk+' span').text(response.Tags_default3);
+  
+        
+    },
+    error: function(request, status, error) {
+        alert("로그인이 필요합니다.");
+        console.log("code:" + request.status + "\n" + "message8:" + request.responseText + "\n" + "error:" + error);
+    }
+});
+})
+
+{% endif %}
+
+
+
+$(document).ready(function () {
+
+var tmp = parseInt($("#test_obj").css('top'));
+
+$(window).scroll(function () {
+    var scrollTop = $(window).scrollTop();
+    var obj_position = scrollTop + tmp + "px";
+
+    $("#test_obj").stop().animate({
+        "top": obj_position
+    }, 500);
+    
+}).scroll();
+});
+
+$(document).ready(function() {
+ $('ul.tabs li').click(function(){
+    var tab_id = $(this).attr('data-tab');
+
+    $('ul.tabs li').removeClass('current');
+    $('.tab-content').removeClass('current');
+ 
+    $(this).addClass('current');
+    $("#"+tab_id).addClass('current');
+  })
+
+});
+
+$(document).ready(function(){ 
+//이벤트 발생 전 선택된 값 
+var preValue = $("input[name='radio_like']:checked").val(); 
+//클릭 이벤트 발생 
+    $("input[name='radio_like']").click(function()
+    { 
+        if(confirm("변경하시겠습니까?") == false) {
+             //체크 해제 
+             $(this).prop('checked', false); 
+             //이전 라디오버튼 체크 
+             $("input[name='radio_like']:radio[value='" + preValue + "']").prop('checked', true); 
+             return; 
+        } 
+        preValue = $(this).val(); 
+    }); 
+});
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+</script>
+
+<script>
+    function zoomIn(event) {
+    event.target.style.width = "600px";
+    event.target.style.height = "auto";
+    event.target.style.transition = "all 0.5s";
+    }
+
+    function zoomOut(event) {
+    event.target.style.width = "180px";
+    event.target.style.height = "auto";
+    event.target.style.transition = "all 0.5s";
+    }
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.html' %}
+{% load IO_filters %}
+{% load bootstrap4 %}
+{% block content %}
+{% load static %}
+{% load filters %}
+
+<script>
+    let filesDone = 0
+    let filesToDo = 0
+</script>
+
+
+<meta charset="UTF-8" />
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <!-- Topbar -->
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+            <!-- Sidebar Toggle (Topbar) -->
+            <form class="form-inline">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </form>
+    
+            <button type="button" id="sidebarCollapse" class="navbar-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    $('#sidebarCollapse').on('click', function () {
+                        $('#sidebar').toggleClass('active');
+                        $(this).toggleClass('active');
+                    });
+                });
+            </script>
+    
+            <!-- Topbar Search -->
+            <!--
+            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-light border-0 small mt-0" placeholder="Search for..."
+                        aria-label="Search" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="button">
+                            <i class="fas fa-search fa-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            -->
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+    
+                <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                <li class="nav-item dropdown no-arrow d-sm-none">
+                    <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-search fa-fw"></i>
+                    </a>
+                    <!-- Dropdown - Messages -->
+                    <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                        aria-labelledby="searchDropdown">
+                        <form class="form-inline mr-auto w-100 navbar-search">
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-light border-0 small"
+                                    placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" type="button">
+                                        <i class="fas fa-search fa-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+    
+    
+                <div class="topbar-divider d-none d-sm-block"></div>
+    
+                <!-- Nav Item - User Information -->
+                <li class="nav-item dropdown no-arrow">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user_id }}</span>
+                        <img class="img-profile rounded-circle" src="{% static "img/undraw_profile.svg" %}">
+                    </a>
+                    <!-- Dropdown - User Information -->
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                        aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Profile
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Settings
+                        </a>
+                        <a class="dropdown-item" href="#">
+                            <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Activity Log
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                            Logout
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <div class="row justify-content-center">
+        <div class="p-3">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body">
+                    <h2 style="text-align:center;position: relative; ">AI SaMD for Diagnostic Assitance<p>interpretation of Thyroid nodule</h2><br>
+                    <form action="{% url 'board' %}" method="POST" enctype="multipart/form-data" style="text-align:center; width:800px; ">
+                        
+                        {% csrf_token %}
+                        {% bootstrap_form boardForm %}
+                        <!--image delete button-->
+
+                        <!-- 이미지 갯수 선택하는 라디오버튼 -->
+                        <div>
+                            <button id="button1" onclick="button1_click();">버튼1</button>
+                            <button id="button2" onclick="button2_click();">버튼2</button>
+                        </div>
+
+                        <div id="drop_box" class="row">
+                            <div id="drop-area1" style="float: left; width: 50%;">
+                                    <p>Drop images</p>
+                                    <input type="file" id="fileElem" name="imgfile" accept="image/*" onchange="handleFiles(this.files)">
+                                    <label class="button" for="fileElem" >횡단 이미지 선택</label> 
+                            <div id="gallery"></div>
+                            </div>
+
+                            <div id="drop-area2" style="float: left; width: 50%;">
+                                <p>Drop images</p>
+                                <input type="file" id="fileElem2" name="imgfile2" accept="image/*" onchange="handleFiles2(this.files)">
+                                <label class="button" for="fileElem2" >종단 이미지 선택</label> 
+                            <div id="gallery2"></div>
+                            </div>
+                        </div>
+                        <button type="button" id="image_delete" class="btn btn-secondary" onclick="image_delete_in_gallery()">image delete</button>
+
+
+
+                
+                        <button id="testimage" class="btn btn-secondary">UPLOAD</button>
+                    </form>
+                    
+                    <button id="testimagemodal" style="display:none" class="btn btn-secondary btn-icon-split" data-toggle="modal" data-target=".bd-example-modal-lg"></button>
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <span style="font-weight: bold;"> <br>
+
+                    {% if board %}
+                        <ul class="tabs" style="margin-left: 10px;">
+                            {% for board_list in board %}
+                                {% if forloop.counter == 1 %}
+                                    <li class="tab-link current" data-tab="board{{ forloop.counter }}">({{forloop.counter  }}) {{ board_list.patient_id }}</li>
+                                {% else %}
+                                    <li class="tab-link" data-tab="board{{ forloop.counter }}">({{forloop.counter  }}) {{ board_list.patient_id }}</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+
+                        {% for board_list in board %}
+                            {% with imgfile|add_string:board_list.patient_id as template %}
+                                {% if not imgfile|isfile:board_list.patient_id %}
+                                    <!-- click . . . -->
+                                {% endif %}
+                                <!--Detect image Roi -->
+                                {% if forloop.counter == 1 %}
+                                    <div id="board{{ forloop.counter }}" class="tab-content current" style="margin-left: 10px; width: 780px;">
+                                        <div class="row">
+                                            {% with template|detectfile as Detect_paths %}
+                                                {% for Detect_image in Detect_paths %}
+                                                    <img class="card border-left-primary shadow h-100 py-2" src={{ Detect_image|add_dir }}
+                                                    style="width: 300px; height: 270px;"onclick="window.open("javascript:popupImage(this.src);")" alt="클릭하시면 조금더 커집니다.." hspace="0">
+                                                {% endfor %}
+                                            {% endwith %}
+                                            
+                                            <div>
+                                                {% with template|nodule_idx as nodule_paths%}
+                                                    {% if not nodule_paths%}
+                                                        <div class="row">
+                                                            <h6 class="h6 mb-2 text-gray-600" style="margin-left: 20px;">● number of nodules : 0</h6>
+                                                            <h6 class="h6 mb-2 text-gray-600" style="margin-left: 20px;">● Absent</h6>
+                                                        </div>
+                                                    {% else %}                                                        
+                                                        <div class="row">
+                                                            <h6 class="h6 mb-2 text-gray-600" style="margin-left: 20px;">● number of nodules : {{ template|nodule_images_number }}</h6>
+                                                            <h6 class="h6 mb-2 text-gray-600" style="margin-left: 20px;">● Present</h6>
+                                                        </div>
+                                                    {% endif %}
+
+                                                    <ul class="tabs2" style="margin-left: 0px;">
+                                                            {% for nodule_image in nodule_paths%}
+                                                                {% if forloop.counter == 1 %}
+                                                                    <li class="tab-link2 current" data-tab="nodule{{ forloop.counter }}">nodule {{ forloop.counter }}</li>
+                                                                {% else %}
+                                                                    <li class="tab-link2" data-tab="nodule{{ forloop.counter }}">nodule {{ forloop.counter }}</li>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                    </ul>
+
+                                                    <!-- 탭 안에 탭을 만들어 검출된 결절의 갯수 만큼 검사결과가 표시되도록 구현함. -->
+                                                    {% for nodule_image in nodule_paths %}
+                                                    
+                                                        <!-- 환자 아이디 뒤에 검출한 결절의 갯수만큼 인덱스 값을 /로 붙인 후 text 변수로 선언 -->
+                                                        <!-- e.g.) 검출한 결절의 갯수가 2개인 경우 => patient_id/1, patient_id/2  -->
+                                                        <!-- 자세한 코드는 /home/lt4/lt4/IO/templatetags/IO_filters.py -> add_slash_extension 코드 확인 부탁드립니다. -->
+                                                        {% with  board_list.patient_id|add_slash_extension:forloop.counter as text%}
+                                                        
+                                                            <!-- view 함수를 이용하여 /media/date/patient_id에 있는 텍스트들을 기반으로. K-TIRADS 등급을 가져옴.-->
+                                                            <!-- 자세한 코드는 /home/lt4/lt4/IO/templatetags/IO_filters.py -> view 코드 확인 부탁드립니다. -->
+                                                            {% with imgfile|view:text as grade %}
+                                                                {% if forloop.counter == 1%}
+                                                                    <div id="nodule{{ forloop.counter }}" class="tab-content2 current" style="margin-left: 3px;">
+                                                                        <div class="row">
+
+                                                                            <img class="card border-left-primary shadow" style="width: 130px; height: 100px;" src={{ nodule_image|add_dir }}>
+                                                                            <div style="margin-left: 15px;">
+
+                                                                                <div>1. K-TIRADS  :  {{ grade }}</div>
+
+                                                                                <!-- view_score 함수를 이용하여 /media/date/patient_id에 있는 텍스트들을 기반으로. -->
+                                                                                <!-- K-TIRADS 등급과 확률을 가져옴.-->
+                                                                                <!-- 자세한 코드는 /home/lt4/lt4/IO/templatetags/IO_filters.py -> view_score 코드 확인 부탁드립니다. -->
+                                                                                {% for grade, score in imgfile|view_score:text %}
+                                                                                    <div style="margin-left: 10px;"><h6>- {{ grade }} : {{ score }}</h6></div>
+                                                                                {% endfor %}
+                                                                                <div class="row">
+                                                                                    <div>2. B/M  :  {{ grade|BM }}</div>
+                                                                                    <h6 style="margin-left: 15px;">(</h6>
+
+                                                                                    <!-- view_score_bm 함수를 이용하여 /media/date/patient_id에 있는 텍스트들을 기반으로. -->
+                                                                                    <!-- Benign / Malignant 등급과 확률을 가져옴.-->
+                                                                                    <!-- 자세한 코드는 /home/lt4/lt4/IO/templatetags/IO_filters.py -> view_score_bm 코드 확인 부탁드립니다. -->
+                                                                                    <!-- tagging_history_blank.html 코드의 300번째 라인 ~ 참고해보시면 좋을 것 같습니다. -->
+                                                                                    {% for bm, score in imgfile|view_score_bm:text %}
+                                                                                        {% if forloop.counter == 1%}
+                                                                                            <div style="margin-left: 10px;"><h6>{{ bm }} : {{ score }}, </h6></div>
+                                                                                        {% else %}
+                                                                                            <div style="margin-left: 10px;"><h6>{{ bm }} : {{ score }} </h6></div>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                    <h6 style="margin-left: 15px;">)</h6>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div>3. P/N  :  {{ grade|PN }}</div>
+                                                                                    <h6 style="margin-left: 15px;">(</h6>
+
+                                                                                    <!-- view_score_pn 함수를 이용하여 /media/date/patient_id에 있는 텍스트들을 기반으로. -->
+                                                                                    <!-- Positive / Negative 등급과 확률을 가져옴.-->
+                                                                                    <!-- 자세한 코드는 /home/lt4/lt4/IO/templatetags/IO_filters.py -> view_score_pn 코드 확인 부탁드립니다. -->
+                                                                                    {% for pn, score in imgfile|view_score_pn:text %}
+                                                                                        {% if forloop.counter == 1%}
+                                                                                            <div style="margin-left: 10px;"><h6>{{ pn }} : {{ score }}, </h6></div>
+                                                                                        {% else %}
+                                                                                            <div style="margin-left: 10px;"><h6>{{ pn }} : {{ score }} </h6></div>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                    <h6 style="margin-left: 15px;">)</h6>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% else %}
+                                                                    <div id="nodule{{ forloop.counter }}" class="tab-content2" style="margin-left: 3px;">
+                                                                        <div class="row">
+                                                                            <img class="card border-left-primary shadow" style="width: 130px; height: 100px;" src={{ nodule_image|add_dir }}>
+                                                                            <div style="margin-left: 15px;">
+                                                                                <div>1. K-TIRADS  :  {{ grade }}</div>
+
+                                                                                {% for grade, score in imgfile|view_score:text %}
+                                                                                    <div style="margin-left: 10px;"><h6>- {{ grade }} : {{ score }}</h6></div>
+                                                                                {% endfor %}
+                                                                                <div class="row">
+                                                                                    <div>2. B/M  :  {{ grade|BM }}</div>
+                                                                                    <h6 style="margin-left: 15px;">(</h6>
+                                                                                    {% for bm, score in imgfile|view_score_bm:text %}
+                                                                                        {% if forloop.counter == 1%}
+                                                                                            <div style="margin-left: 10px;"><h6>{{ bm }} : {{ score }}, </h6></div>
+                                                                                        {% else %}
+                                                                                            <div style="margin-left: 10px;"><h6>{{ bm }} : {{ score }} </h6></div>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                    <h6 style="margin-left: 15px;">)</h6>
+                                                                                </div>
+                                                                                <div class="row">
+                                                                                    <div>3. P/N  :  {{ grade|PN }}</div>
+                                                                                    <h6 style="margin-left: 15px;">(</h6>
+                                                                                    {% for pn, score in imgfile|view_score_pn:text %}
+                                                                                        {% if forloop.counter == 1%}
+                                                                                            <div style="margin-left: 10px;"><h6>{{ pn }} : {{ score }}, </h6></div>
+                                                                                        {% else %}
+                                                                                            <div style="margin-left: 10px;"><h6>{{ pn }} : {{ score }} </h6></div>
+                                                                                        {% endif %}
+                                                                                    {% endfor %}
+                                                                                    <h6 style="margin-left: 15px;">)</h6>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endif %}
+                                                            {% endwith %}
+                                                        {% endwith %}
+                                                    {% endfor %}
+
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div id="board{{ forloop.counter }}" class="tab-content" style="margin-left: 10px; width: 780px;">
+                                        <div class="row">
+                                            {% with template|detectfile as Detect_paths %}
+
+                                                {% for Detect_image in Detect_paths %}
+
+                                                    <img class="card border-left-primary shadow h-100 py-2" src={{ Detect_image|add_dir }}
+                                                    style="width: 380px; height: 350px;"onclick="window.open("javascript:popupImage(this.src);")" alt="클릭하시면 조금더 커." hspace="0">
+                                                {% endfor %}
+                                            {% endwith %}
+                                            <div>
+                                                <ul class="tabs2" style="margin-left: 10px;">
+                                                    {% with template|nodule_idx as nodule_paths%}
+                                                    
+                                                        {% for nodule_image in nodule_paths%}
+                                                            {% if forloop.counter == 1 %}
+                                                                <li class="tab-link2 current" data-tab="nodule{{ forloop.counter }}">nodule {{ forloop.counter }}</li>
+                                                            {% else %}
+                                                                <li class="tab-link2" data-tab="nodule{{ forloop.counter }}">nodule {{ forloop.counter }}</li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endwith %}
+                                                </ul>
+                                                {% with template|nodule_idx as nodule_paths%}
+                                                    {% for nodule_image in nodule_paths %}
+                                                        {% if forloop.counter == 1%}
+                                                            <div id="nodule{{ forloop.counter }}" class="tab-content2 current" style="margin-left: 3px;">
+                                                                <img class="card border-left-primary shadow" style="width: 130px; height: 100px;" src={{ nodule_image|add_slash }}>
+                                                            </div>
+                                                        {% else %}
+                                                            <div id="nodule{{ forloop.counter }}" class="tab-content2" style="margin-left: 3px;">
+                                                                <img class="card border-left-primary shadow" style="width: 130px; height: 100px;" src={{ nodule_image|add_slash }}>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endwith %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                        <div style="margin-left: 10px; margin-top: 20px;">
+                            <table style="text-align:center; width:700px; border:1px solid black;" class="table">
+                                <thead>
+                                    <tr class="th_color">
+                                        <th>Index</th>
+                                        <th>patient id</th>
+                                        <th>Doctor ID</th>
+                                        <th>Tagging</th>
+                                        <th>Restart</th>
+                                    </tr>
+                                </thead>
+                                {% for board_list in board %}
+                                    {% if imgfile|isfile:board_list.patient_id %}
+                                        <tbody>
+                                            <tr class="td_color">
+                                                <td align="center">{{ forloop.counter }}</td>
+                                                <td align="center" width="530">{{ board_list.patient_id }}</td>
+                                                <td align="center" width="530">{{ board_list.user }}</td>
+                                                <td><button class="btn btn-success btn-circle" type="submit"
+                                                        onclick="getNotificationPermission({{ board_list.pk }})"><i class="fas fa-check"></i>  </button></td>
+                                                <td><button class="btn btn-danger btn-circle" type="submit"
+                                                    onclick="location.href='/delete/{{board_list.pk}}'"><i class="fas fa-trash"></i></button></td>
+                                            </tr>
+                                        </tbody>
+                                    {% else %}
+                                    <tr>
+                                        <td align="center">{{ forloop.counter }}</td>
+                                        <td>{{ board_list.patient_id }}</td>
+                                        <td>{{ board_list.user }}</td>
+                                        <td><button class="btn btn-secondary" type="submit"
+                                                onclick="location.href='/edit/{{board_list.pk}}'">Tagging</button></td>
+                                        <td><button class="btn btn-secondary" type="submit"
+                                            onclick="location.href='/delete/{{board_list.pk}}'">Restart</button></td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </table>
+                        </div>
+
+                    {% else %}
+                        <ul class="tabs" style="margin-left: 10px;">
+                            <li class="tab-link current" data-tab="no_board">no datas</li>
+                        </ul>  
+
+                        <div id="no_board" class="tab-content current" style="margin-left: 10px; width: 780px;">
+                            no datas
+                        </div>
+                        
+                        <div style="margin-left: 10px; margin-top: 20px;">
+                            <table style="text-align:center; width:700px; border:1px solid black;" class="table">
+                                <thead>
+                                    <tr class="th_color">
+                                        <th>Index</th>
+                                        <th>patient id</th>
+                                        <th>Doctor ID</th>
+                                        <th>Tagging</th>
+                                        <th>Restart</th>
+                                    </tr>
+                                </thead>
+                                <tr>
+                                    <!-- 테이블에 데이터가 없는 경우 환자 데이터가 없는 문구 출력 -->
+                                    <td colspan="6" align='center'>환자 데이터가 없습니다.</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% comment %} <script>
+            function wait_for_find_json(patient_id) {
+                alert("{{ board_list.patient_id }} is not json file");
+                var json_file = "{{ imgfile|isjson:board_list.patient_id }}";
+                if (json_file == "") {
+                    setTimeout(function() {
+                        wait_for_find_json(patient_id);
+                alert("{{ board_list.patient_id }} is not json file");
+                    }, 1000);
+                } else {
+                    alert("발견")
+                }
+            }
+        </script> {% endcomment %}
+        
+        {% if board %}
+
+            {% for board_list in board %}
+
+                {% if not imgfile|isjson:board_list.patient_id %}
+                    <script type="text/javascript">
+
+                    </script>
+
+                {% if imgfile|isimg:board_list.patient_id == "complete" %}
+                    
+                    {% if not imgfile|isfile:board_list.patient_id %}
+                        <script type="text/javascript">
+                            location.reload();
+                        </script>
+                    {% endif %} 
+                
+                {% endif %}
+                
+                {% endif %} 
+                
+
+            {% endfor %}
+            
+            <script type="text/javascript">
+                
+                document.addEventListener("DOMContentLoaded", function(event){
+                    window.onload = function(){
+                        document.getElementById("testimagemodal").click();
+                    }
+
+                        // if (!("Notification" in window)) {
+                        //     alert("데스크톱 알림을 지원하지 않는 브라우저입니다.");
+                        // }
+                        // // 데스크탑 알림 권한 요청
+                        // Notification.requestPermission(function (result) {
+                        //     // 권한 거절
+                        //     if(result == 'denied') {
+                        //         alert('알림을 차단하셨습니다.\n브라우저의 사이트 설정에서 변경하실 수 있습니다.');
+                        //         return false;
+                        //     }
+                        // });
+                });
+            
+            </script>
+        {% else %}
+        {% endif %} 
+
+    </div>
+</div>
+
+<script>
+    
+</script>
+
+<script>
+    function button1_click() {
+    const dropArea = document.getElementById("drop-area1");
+
+    //  prevent default behaviors and stop the events from bubbling up any higher than necessary
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false)
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    // Add and remove class name 'highlight' to alter styling when hovered
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false)
+    });
+    ['drop', 'dragleave'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false)
+    });
+    function highlight(e) {
+        dropArea.classList.add('highlight')
+    }
+    function unhighlight(e) {
+        dropArea.classList.remove('highlight')
+    }
+
+    // gets the data for the files that were dropped and turns it into a list called 'files'
+    dropArea.addEventListener('drop', handleDrop, false)
+    function handleDrop(e) {
+        const dt = e.dataTransfer
+        const files = dt.files
+        handleFiles(files)
+    }
+
+    // convert 'files' to an array in order to iterate over it 
+    function handleFiles(files) {
+        files = [...files]
+        initializeProgress(files.length)
+        files.forEach(uploadFile)
+        files.forEach(previewFile)
+    }
+
+    // send files to this url once uploaded
+    function uploadFile(file) {
+        let url = "/board"
+        let formData = new FormData()
+
+        formData.append('FILES', file)
+        console.log(formData)
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(progressDone)
+        .catch(() => { console.log('error'); })
+    }
+
+
+    function previewFile(file) {
+        let reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onloadend = function() {
+            let img = document.createElement('img')
+            img.src = reader.result
+            document.getElementById('gallery').appendChild(img)
+        }
+    }
+
+    function initializeProgress(numfiles) {
+        filesDone = 0
+        filesToDo = numfiles
+    }
+
+    function progressDone() {
+        filesDone++
+    }
+
+
+
+
+    const dropArea2 = document.getElementById("drop-area2");
+
+    //  prevent default behaviors and stop the events from bubbling up any higher than necessary
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        dropArea2.addEventListener(eventName, preventDefaults2, false)
+    });
+
+    function preventDefaults2(e) {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    // Add and remove class name 'highlight' to alter styling when hovered
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea2.addEventListener(eventName, highlight2, false)
+    });
+    ['drop', 'dragleave'].forEach(eventName => {
+        dropArea2.addEventListener(eventName, unhighlight2, false)
+    });
+    function highlight2(e) {
+        dropArea2.classList.add('highlight')
+    }
+    function unhighlight2(e) {
+        dropArea2.classList.remove('highlight')
+    }
+
+    // gets the data for the files that were dropped and turns it into a list called 'files'
+    dropArea2.addEventListener('drop', handleDrop2, false)
+    function handleDrop2(e) {
+        const dt = e.dataTransfer
+        const files = dt.files
+        handleFiles2(files)
+    }
+
+    // convert 'files' to an array in order to iterate over it 
+    function handleFiles2(files) {
+        files = [...files]
+        initializeProgress(files.length)
+        {% comment %} files.forEach(uploadFile) {% endcomment %}
+        files.forEach(previewFile2)
+    }
+
+    // send files to this url once uploaded
+    function uploadFile(file) {
+        let url = 'PUT YOUR URL HERE'
+        let formData = new FormData()
+
+        formData.append('file', file)
+        console.log(formData)
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(progressDone)
+        .catch(() => { console.log('error'); })
+    }
+
+
+    function previewFile2(file) {
+        let reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onloadend = function() {
+            let img = document.createElement('img')
+            img.src = reader.result
+            document.getElementById('gallery2').appendChild(img)
+        }
+    }
+
+    function initializeProgress(numfiles) {
+        
+        filesToDo = numfiles
+    }
+
+    function progressDone() {
+        filesDone++
+    }
+
+    //* NOTES
+    //* The 'DataTransfer' object is used to hold the data that is being dragged during a drag and drop operation. It may hold one or more data items, each of one or more data types.
+    //* 'DataTransfer.files' Contains a list of all the local files available on the data transfer. If the drag operation doesn't involve dragging files, this property is an empty list.
+}
+
+
+function button2_click() {
+    const dropArea = document.getElementById("drop-area1");
+
+    //  prevent default behaviors and stop the events from bubbling up any higher than necessary
+    ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false)
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    // Add and remove class name 'highlight' to alter styling when hovered
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false)
+    });
+    ['drop', 'dragleave'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false)
+    });
+    function highlight(e) {
+        dropArea.classList.add('highlight')
+    }
+    function unhighlight(e) {
+        dropArea.classList.remove('highlight')
+    }
+
+    // gets the data for the files that were dropped and turns it into a list called 'files'
+    dropArea.addEventListener('drop', handleDrop, false)
+    function handleDrop(e) {
+        const dt = e.dataTransfer
+        const files = dt.files
+        handleFiles(files)
+    }
+
+    // convert 'files' to an array in order to iterate over it 
+    function handleFiles(files) {
+        files = [...files]
+        initializeProgress(files.length)
+        files.forEach(uploadFile)
+        files.forEach(previewFile)
+    }
+
+    // send files to this url once uploaded
+    function uploadFile(file) {
+        let url = "/board"
+        let formData = new FormData()
+
+        formData.append('FILES', file)
+        console.log(formData)
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(progressDone)
+        .catch(() => { console.log('error'); })
+    }
+
+
+    function previewFile(file) {
+        let reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onloadend = function() {
+            let img = document.createElement('img')
+            img.src = reader.result
+            document.getElementById('gallery').appendChild(img)
+        }
+    }
+
+    function initializeProgress(numfiles) {
+        filesDone = 0
+        filesToDo = numfiles
+    }
+
+    function progressDone() {
+        filesDone++
+    }
+
+}
+
+
+
+</script>
+
+<!-- Bootstrap core JavaScript-->
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script src="{% static 'js/popupImage.js' %}"></script>
+
+
+<script type="text/javascript">   
+    //알림 권한 요청
+    function getNotificationPermission(key) {
+        // 브라우저 지원 여부 체크
+        if (!("Notification" in window)) {
+            // alert("데스크톱 알림을 지원하지 않는 브라우저입니다.");
+            return false;
+        }
+        // 데스크탑 알림 권한 요청
+        Notification.requestPermission(function (result) {
+            // 권한 거절
+            if(result == 'denied') {
+                // alert('알림을 차단하셨습니다.\n브라우저의 사이트 설정에서 변경하실 수 있습니다.');
+                return false;
+            }
+        });
+
+        var link="/edit/" + key;
+        location.href=link;
+
+
+    }
+</script>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<style>
+    #drop_box {
+        border: 2px dashed #ccc;
+        border-radius: 20px;
+        width: 480px;
+        font-family: sans-serif;
+        margin: 100px auto;
+        padding: 20px;
+    }
+    #drop_box.highlight {
+    border-color: purple;
+    }
+
+    #drop-area1 {
+        border: 2px dashed #ffffff;
+        border-radius: 20px;
+        width: 480px;
+        font-family: sans-serif;
+        {% comment %} margin: 100px auto; {% endcomment %}
+        {% comment %} padding: 20px; {% endcomment %}
+    }
+    #drop-area1.highlight {
+    border-color: purple;
+    }
+
+    #drop-area2 {
+        border: 2px dashed #ffffff;
+        border-radius: 20px;
+        width: 480px;
+        font-family: sans-serif;
+        {% comment %} margin: 100px auto; {% endcomment %}
+        {% comment %} padding: 20px; {% endcomment %}
+    }
+    #drop-area2.highlight {
+    border-color: purple;
+    }
+
+    p {
+    margin-top: 0;
+    }
+    .my-form {
+    margin-bottom: 10px;
+    }
+    #gallery {
+    margin-top: 10px;
+    }
+    #gallery img {
+    width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    vertical-align: middle;
+    }
+    #gallery2 {
+        margin-top: 10px;
+    }
+    #gallery2 img {
+    width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    vertical-align: middle;
+    }
+    .button {
+    display: inline-block;
+    padding: 10px;
+    background: #ccc;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    }
+    .button:hover {
+    background: #ddd;
+    }
+    #fileElem {
+    display: none;
+    }
+    #fileElem2 {
+    display: none;
+    }
+
+    
+    #test_obj {
+        position: absolute;
+        width: 550px;
+        height: 660px;
+        right: 50px;
+        border-radius: 70px;
+        top: 70px;
+        bottom: 250px;
+        border: 1px solid #dddddd;
+    }
+
+    ul.tabs{
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    ul.tabs li{
+        background: none;
+        color: #222;
+        display: inline-block;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+
+    ul.tabs li.current{
+        background: #ededed;
+        color: #222;
+    }
+
+    ul.tabs2{
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+    ul.tabs2 li{
+        background: none;
+        color: #666;
+        display: inline-block;
+        padding: 10px 15px;
+        cursor: pointer;
+    }
+
+    ul.tabs2 li.current{
+        background: #ededed;
+        color: #666;
+    }
+
+    .tab-content{
+        display: none;
+        background: #ededed;
+        padding: 15px;
+    }
+
+    .tab-content.current{
+        display: inherit;
+    }
+
+    .tab-content2{
+        display: none;
+        background: #ededed;
+        padding: 15px;
+    }
+
+    .tab-content2.current{
+        display: inherit;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        var tmp = parseInt($("#test_obj").css('top'));
+
+        $(window).scroll(function () {
+            var scrollTop = $(window).scrollTop();
+            var obj_position = scrollTop + tmp + "px";
+
+            $("#test_obj").stop().animate({
+                "top": obj_position
+            }, 500);
+
+        }).scroll();
+    });
+
+
+
+    $(document).ready(function() {
+		$('ul.tabs li').click(function(){
+			var tab_id = $(this).attr('data-tab');
+		
+			$('ul.tabs li').removeClass('current');
+			$('.tab-content').removeClass('current');
+		
+			$(this).addClass('current');
+			$("#"+tab_id).addClass('current');
+		})
+
+    });
+
+    $(document).ready(function() {
+        $('ul.tabs2 li').click(function(){
+           var tab_id = $(this).attr('data-tab');
+        
+           $('ul.tabs2 li').removeClass('current');
+           $('.tab-content2').removeClass('current');
+        
+           $(this).addClass('current');
+           $("#"+tab_id).addClass('current');
+         })
+
+   });
+
+    $(document).ready(function(){ 
+        //이벤트 발생 전 선택된 값 
+        var preValue = $("input[name='radio_like']:checked").val(); 
+        //클릭 이벤트 발생 
+            $("input[name='radio_like']").click(function()
+            { 
+                if(confirm("변경하시겠습니까?") == false) {
+                     //체크 해제 
+                     $(this).prop('checked', false); 
+                     //이전 라디오버튼 체크 
+                     $("input[name='radio_like']:radio[value='" + preValue + "']").prop('checked', true); 
+                     return; 
+                } 
+                preValue = $(this).val(); 
+            }); 
+        });
+        
+
+        
+</script>
+
+<script type="text/javascript">   
+    function image_delete_in_gallery() {
+        document.getElementById('gallery').innerHTML = "";
+        document.getElementById('gallery2').innerHTML = "";
+    }
+</script>
+
+
+{% endblock %}

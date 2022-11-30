@@ -1,0 +1,334 @@
+{% extends 'base.html' %}
+{% load filters %}
+{% load static %}
+{% block content %}
+
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <!-- Main Content -->
+        <div id="content">
+
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                <!-- Sidebar Toggle (Topbar) -->
+                <form class="form-inline">
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                </form>
+        
+                <button type="button" id="sidebarCollapse" class="navbar-btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                
+                <script type="text/javascript">
+                    $(document).ready(function () {
+                        $('#sidebarCollapse').on('click', function () {
+                            $('#sidebar').toggleClass('active');
+                            $(this).toggleClass('active');
+                        });
+                    });
+                </script>
+                <div style="text-align:middle;">
+                <!-- Page Heading -->
+                <h5 class="m-0 ml-3 text-gray-800">STEP3 : Interpretation History: </h5>
+                <p class="m-0 ml-2">이전 환자들의 최종 판독 결과를 관리해주는 페이지 입니다.</p>
+                </div>
+                <!-- Topbar Navbar -->
+                <ul class="navbar-nav ml-auto">
+        
+                    <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+                    <li class="nav-item dropdown no-arrow d-sm-none">
+                        <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <!-- Dropdown - Messages -->
+                        <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+                            <form class="form-inline mr-auto w-100 navbar-search">
+                                <div class="input-group">
+                                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button">
+                                            <i class="fas fa-search fa-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+        
+                    <!-- Nav Item - Alerts -->
+        
+                    <!--div class="topbar-divider d-none d-sm-block"></div-->
+        
+                    <!-- Nav Item - User Information -->
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user_name }}</span>
+                            <img class="img-profile rounded-circle" src="{% static "img/undraw_profile.svg" %}">
+                        </a>
+                    </li>
+        
+                </ul>
+        
+            </nav>
+            <!-- End of Topbar -->
+
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <div class="card shadow mb-4">
+                    <form method="post" action= "" id="order_by_form" class="ordered_form" style="margin-left: 20px; margin-top: 90% width: 17%">
+                    <div class="card-header">
+                        <div style="text-align:middle;">
+                            <!-- 전체 이력 페이지로 넘어가는 버튼 -->
+                            <p style="display:inline;">진료의가 작성한 최종 판독문리스트입니다.</p>
+                            <style>
+                                select {
+                                    { ... }
+                                    width: 150px;
+                                    height: 35px;
+                                    background-size: 20px;
+                                    padding: 5px 30px 5px 10px;
+                                    border-radius: 4px;
+                                    outline: 0 none;
+                                  }
+                                select option {
+                                    background: white;
+                                    color: #000;
+                                    {% comment %} padding: 3px 0; {% endcomment %}
+                                  }
+                            </style>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            
+                            <div id="dataTable_wrapper" style="width: 100%;" class="dataTables_wrapper dt-bootstrap4">
+                                <form method="post" action="">
+                                    <div align="right" style="margin-bottom: 1%; height: 300%">
+                                        <!-- 정렬기준 선택하는 창 -->
+                                        <select  style="width: 20%; text-align:left;" name="order_by" id="order_by" onchange="this.form.submit();">
+                                            <option value="newrest">최신 순</option>
+                                            <option value="oldest">오래된 순</option>
+                                            <option value="ascending">환자 id 오름차순</option>
+                                            <option value="descending">환자 id 내림차순</option>
+                                        </select>
+                                        
+                                        <!-- 한 번에 표시 되는 데이터 갯수 선택하는 창 -->
+                                        <select style="width: 10%;" name="entry" id="entry" onchange="this.form.submit();">
+                                            <option value="20">20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</option>
+                                            <option value="10">10</option>
+                                            <option value="5">5</option>
+                                        </select>
+                                        
+                                        <!-- submit 되어도 선택한 값이 유지되도록 해주는 부분-->
+                                        <script>
+                                            $(document).ready(function() {
+                                                $("select[name=order_by]").val("{{ order_by }}")
+                                            })
+                                        </script>
+        
+                                        <script>
+                                            $(document).ready(function() {
+                                                $("select[name=entry]").val("{{ entry }}")
+                                            })
+                                        </script>
+
+                                        <!-- 검색 카테고리를 선택하는 창 -->
+                                        <select name="keyword"  style="width: 15%;" id="keyword" onchange="this.form.submit();">
+                                            <option value="patient_id">Patient ID</option>
+                                            <option value="visit_date">Visit Date</option>
+                                        </select>
+
+                                        <!-- 검색할 데이터 입력하는 입력창 -->
+                                        <input name="search" id="search1"  placeholder="검색하실 내용을 입력해주세요.">
+                                        <input type="submit" style="width: 10%" value="검색">
+                                        <script>
+                                            $(document).ready(function() {
+                                                $("select[name=keyword]").val("{{ keyword }}")
+                                                $("input[name=search]").val("{{ search }}")
+                                            })
+                                        </script>
+                                    </div>
+                                </form>
+
+                                <table class="table table-striped" id="dataTable" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th style = " text-align:center; width:5% ">Index</th>
+                                            <th style = " text-align:center; width:20% ">Patient Id</th>
+                                            <th style = " text-align:center; width:20% ">Visit Date</th>
+                                            <th style = " text-align:center; width:20% " >Doctor Id</th>
+                                            <th style = " text-align:center; width:20% ">Patient Info Data</th>
+                                            <th style = " text-align:center; width:15% ">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if datas %}
+                                            <!--  테이블에 데이터가 있을 경우에  테이블에 있는 데이터를 한 페이지에 20개씩 넣어주는 부분 -->
+                                            {% for patient in datas %}
+                                                <tr>
+                                                    <td align="center" style="vertical-align: middle;">
+                                                        <!--  src/templatetags/filters.py 파일에 있는 커스텀 태그(calculate_index) 적용하여 데이터 번호를 순차적으로 입력 -->
+                                                        {{ datas.number|calculate_index|add:forloop.counter}}
+                                                    </td>
+                                                    <td align="center" style="vertical-align: middle;">{{ patient.patient_id }}</td>
+                                                    <td align="center" style="vertical-align: middle;">{{ patient.visit_date }}</td>
+                                                    <td align="center" style="vertical-align: middle;">{{ user_name }}</td>
+
+                                                    <!--  src/templatetags/filters.py 파일에 있는 커스텀 태그 적용하여(substring) json 경로에서 파일이름만 입력 -->
+                                                    <td align="center" style="vertical-align: middle;"><a href="{% url ' src:detail' patient.id %}"><button type="button" class="btn btn-outline-secondary">Detail</button></a></td>
+                                                    <td align="center" style="vertical-align: middle;"><a href="{% url ' src:remove' patient.pk %}"><button type="button" class="btn btn-outline-danger">Delete</button></a></td>
+                                                </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <!-- 테이블에 데이터가 없는 경우 환자 데이터가 없는 문구 출력 -->
+                                                <td colspan="6" align='center' style="vertical-align: middle;">환자 데이터가 없습니다.</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- 현재 페이지, 전체 페이지, 전체 데이터 개수 표시해주는 부분 -->
+                            <div class="col-sm-12 col-md-5">
+                                <div class="dataTables_info" id="dataTable_info" role = "status" aria-live="polite">Showing {{ datas.number }} to {{ last_page }} of {{ datas.paginator.count }} entries</div>
+                            </div>
+
+                            <!-- 페이징 시작 -->
+                            <div class="col-sm-12 col-md-7">
+                                <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                                    <ul class="pagination">
+
+                                        <!-- 이전 페이지가 있는 경우 이전 페이지로 이동 -->
+                                        {% if datas.has_previous %}
+
+                                            <!-- 첫 페이지로 이동 -->
+                                            <li class="paginate_button page-item previous">
+                                                <a class="page-link" href="?page=1">|<</a>
+                                            </li>
+                                            
+                                            <li class="paginate_button page-item previous" id="dataTable_previous">
+                                                <a class="page-link" href="?page={{ datas.previous_page_number }}"><</a>
+                                            </li>
+                                        {% endif %}
+
+                                        {% for page in datas.paginator.page_range %}
+                                            <!-- 현재 선택된 페이지 부터 앞, 뒤로 3페이지씩 표시 -->
+                                            {% if page >= datas.number|add:-3  and page <= datas.number|add:3 %}
+                                                <!-- 현재 선택되어 있는 페이지와 page 변수가 같은경우 페이지 버튼을 파란색으로 표시 -->
+                                                {% if page == datas.number %}
+                                                    <li class="page-item active" aria-current="page">
+                                                        <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                                                    </li>
+                                                <!-- 그 외의 경우에 그냥 하얀색으로 표시-->
+                                                {% else %}
+                                                    <li class="page-item" aria-current="page">
+                                                        <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        <!-- 다음 페이지가 있는 경우에 다음 페이지로 이동 -->
+                                        {% if datas.has_next %}
+                                            <li class="paginate_button page-item next" id="dataTable_next">
+                                                <a class="page-link" href="?page={{ datas.next_page_number }}">></a>
+                                            </li>
+
+                                            <!-- 마지막 페이지로 이동 -->
+                                            <li class="paginate_button page-item next">
+                                                <a class="page-link" href="?page={{ last_page }}">>|</a>
+                                            </li>
+    
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- End of Main Content -->
+
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Copyright &copy; LT4.inc 2022</span>
+                </div>
+            </div>
+        </footer>
+        <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+
+</div>
+<!-- End of Page Wrapper -->
+
+<!-- Scroll to Top Button>
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+
+< Logout Modal>
+<div-- class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="login.html">Logout</a>
+            </div>
+        </div>
+    </div>
+</div-->
+{% endblock %}
+
+<!-- Bootstrap core JavaScript-->
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+<!-- Page level plugins -->
+<script src="{% static 'vendor/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+<!-- Page level custom scripts -->
+<script src="{% static 'js/demo/datatables-demo.js' %}"></script>
+
+<script>
+    $(document).ready(function() {
+        $(  "select[name=entries]" ).val(  "{{ length_text }}"  )
+        $('select[name=entries]').change(function(){
+            console.log($('select[name=entries]').val());
+            month = $('select[name=entries]').val();
+            $(' .form').submit();
+        });
+    });
+</script>

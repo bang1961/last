@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+{% extends 'base.html' %}
+{% load IO_filters %}
+{% load bootstrap4 %}
+{% block content %}
+{% load static %}
+{% load filters %}
+
+<!-- 서명란 canvas script -->
+<script type="text/javascript">
+    if (window.addEventListener) {
+        window.addEventListener('load', InitEvent, false);
+    }
+    var canvas, context, tool;
+    function InitEvent() {
+        
+        canvas = document.getElementById('drawCanvas');
+        canvas2 = document.getElementById('drawCanvas2');
+
+        if (!canvas) {
+        alert("캔버스 객체를 찾을 수 없음");
+        return;
+        }
+        if (!canvas.getContext) {
+        alert("Drawing Contextf를 찾을 수 없음");
+        return;
+        }
+        context = canvas.getContext('2d');
+        if (!context) {
+        alert("getContext() 함수를 호출 할 수 없음");
+        return;
+        }
+
+        if (!canvas2) {
+        alert("캔버스 객체를 찾을 수 없음");
+        return;
+        }
+        if (!canvas2.getContext) {
+        alert("Drawing Contextf를 찾을 수 없음");
+        return;
+        }
+        context2 = canvas2.getContext('2d');
+        if (!context2) {
+        alert("getContext() 함수를 호출 할 수 없음");
+        return;
+        }
+
+        // Pencil tool 객체를 생성 한다.
+        tool = new tool_pencil();
+        
+        canvas.addEventListener('mousedown', ev_canvas, false);
+        canvas.addEventListener('mousemove', ev_canvas, false);
+        canvas.addEventListener('mouseup', ev_canvas, false);
+        canvas.addEventListener('touchstart', ev_canvas, false);
+        canvas.addEventListener('touchmove', ev_canvas, false);
+        canvas.addEventListener('touchend', ev_canvas, false);
+    }
+    function tool_pencil() {
+        var tool = this;
+        this.started = false;
+        
+        // 마우스를 누르는 순간 그리기 작업을 시작 한다. 
+        this.mousedown = function (ev) {
+        context.beginPath();
+        context.moveTo(ev._x, ev._y);
+        context2.beginPath();
+        context2.moveTo(ev._x, ev._y);
+        tool.started = true;
+        };
+        
+        // 마우스가 이동하는 동안 계속 호출하여 Canvas에 Line을 그려 나간다
+        this.mousemove = function (ev) {
+        if (tool.started) {
+            context.lineTo(ev._x, ev._y);
+            context2.lineTo(ev._x, ev._y);
+            context.stroke();
+            context2.stroke();
+        }
+        };
+        // 마우스 떼면 그리기 작업을 중단한다
+        this.mouseup = function (ev) {
+        if (tool.started) {
+            tool.mousemove(ev);
+            tool.started = false;
+        }
+        };
+    
+        // 마우스를 누르는 순간 그리기 작업을 시작 한다. 
+        this.touchstart = function (ev) {
+        context.beginPath();
+        context.moveTo(ev._x, ev._y);
+        context2.beginPath();
+        context2.moveTo(ev._x, ev._y);
+        tool.started = true;
+        };
+        // 마우스가 이동하는 동안 계속 호출하여 Canvas에 Line을 그려 나간다
+        this.touchmove = function (ev) {
+        if (tool.started) {
+            context.lineTo(ev._x, ev._y);
+            context.stroke();
+            context2.lineTo(ev._x, ev._y);
+            context2.stroke();
+              
+        }
+        };
+        // 마우스 떼면 그리기 작업을 중단한다
+        this.touchend = function (ev) {
+        if (tool.started) {
+            tool.touchmove(ev);
+            tool.started = false;
+            
+        }
+        };
+    }
+    // Canvas요소 내의 좌표를 결정 한다.
+    function ev_canvas(ev) {
+        if (ev.layerX || ev.layerX == 0) { // Firefox 브라우저
+        ev._x = ev.layerX;
+        ev._y = ev.layerY;
+        }
+        else if (ev.offsetX || ev.offsetX == 0) { // Opera 브라우저
+        ev._x = ev.offsetX;
+        ev._y = ev.offsetY;
+        }
+        else if (ev.targetTouches[0] || ev.targetTouches[0].pageX == 0) {   //핸드폰
+        var left = 0;
+        var top = 0;
+        var elem = document.getElementById('drawCanvas');
+    
+        while (elem) {
+            left = left + parseInt(elem.offsetLeft);
+            top = top + parseInt(elem.offsetTop);
+            elem = elem.offsetParent;
+        }
+    
+        ev._x = ev.targetTouches[0].pageX - left;
+        ev._y = ev.targetTouches[0].pageY - top;
+        }
+        // tool의 이벤트 핸들러를 호출한다.
+        var func = tool[ev.type];
+        if (func) {
+        func(ev);
+        }
+    }
+    
+    function onClear() {
+        canvas = document.getElementById('drawCanvas');
+        canvas2 = document.getElementById('drawCanvas2');
+
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.restore();
+
+        context2.save();
+        context2.setTransform(1, 0, 0, 1, 0, 0);
+        context2.clearRect(0, 0, canvas2.width, canvas2.height);
+        context2.restore();
+    }
+</script>
+
+<script type="text/javascript">
+    if (window.addEventListener) {
+        window.addEventListener('load', InitEvent2, false);
+    }
+    var canvas3, context3, tool2;
+    function InitEvent2() {
+        canvas3 = document.getElementById('drawCanvas3');
+        canvas4 = document.getElementById('drawCanvas4');
+
+        if (!canvas3) {
+        alert("캔버스 객체를 찾을 수 없음");
+        return;
+        }
+        if (!canvas3.getContext) {
+        alert("Drawing Contextf를 찾을 수 없음");
+        return;
+        }
+        context3 = canvas3.getContext('2d');
+        if (!context3) {
+        alert("getContext() 함수를 호출 할 수 없음");
+        return;
+        }
+
+        if (!canvas4) {
+        alert("캔버스 객체를 찾을 수 없음");
+        return;
+        }
+        if (!canvas4.getContext) {
+        alert("Drawing Contextf를 찾을 수 없음");
+        return;
+        }
+        context4 = canvas4.getContext('2d');
+        if (!context4) {
+        alert("getContext() 함수를 호출 할 수 없음");
+        return;
+        }
+
+        // Pencil tool 객체를 생성 한다.
+        tool2 = new tool_pencil2();
+        canvas3.addEventListener('mousedown', ev_canvas2, false);
+        canvas3.addEventListener('mousemove', ev_canvas2, false);
+        canvas3.addEventListener('mouseup', ev_canvas2, false);
+        canvas3.addEventListener('touchstart', ev_canvas2, false);
+        canvas3.addEventListener('touchmove', ev_canvas2, false);
+        canvas3.addEventListener('touchend', ev_canvas2, false);
+        
+    }
+    function tool_pencil2() {
+        var tool2 = this;
+        this.started = false;
+    
+        // 마우스를 누르는 순간 그리기 작업을 시작 한다. 
+        this.mousedown = function (ev) {
+        context3.beginPath();
+        context3.moveTo(ev._x, ev._y);
+        context4.beginPath();
+        context4.moveTo(ev._x, ev._y);
+        tool2.started = true;
+        };
+        // 마우스가 이동하는 동안 계속 호출하여 Canvas에 Line을 그려 나간다
+        this.mousemove = function (ev) {
+        if (tool2.started) {
+            context3.lineTo(ev._x, ev._y);
+            context4.lineTo(ev._x, ev._y);
+            context3.stroke();
+            context4.stroke();
+        }
+        };
+        // 마우스 떼면 그리기 작업을 중단한다
+        this.mouseup = function (ev) {
+        if (tool2.started) {
+            tool2.mousemove(ev);
+            tool2.started = false;
+        }
+        };
+    
+        // 마우스를 누르는 순간 그리기 작업을 시작 한다. 
+        this.touchstart = function (ev) {
+        context3.beginPath();
+        context3.moveTo(ev._x, ev._y);
+        context4.beginPath();
+        context4.moveTo(ev._x, ev._y);
+        tool2.started = true;
+        };
+        // 마우스가 이동하는 동안 계속 호출하여 Canvas에 Line을 그려 나간다
+        this.touchmove = function (ev) {
+        if (tool2.started) {
+            context3.lineTo(ev._x, ev._y);
+            context3.stroke();
+            context4.lineTo(ev._x, ev._y);
+            context4.stroke();
+              
+        }
+        };
+        // 마우스 떼면 그리기 작업을 중단한다
+        this.touchend = function (ev) {
+        if (tool2.started) {
+            tool2.touchmove(ev);
+            tool2.started = false;
+            
+        }
+        };
+    }
+    // Canvas요소 내의 좌표를 결정 한다.
+    function ev_canvas2(ev) {
+        if (ev.layerX || ev.layerX == 0) { // Firefox 브라우저
+        ev._x = ev.layerX;
+        ev._y = ev.layerY;
+        }
+        else if (ev.offsetX || ev.offsetX == 0) { // Opera 브라우저
+        ev._x = ev.offsetX;
+        ev._y = ev.offsetY;
+        }
+        else if (ev.targetTouches[0] || ev.targetTouches[0].pageX == 0) {   //핸드폰
+        var left = 0;
+        var top = 0;
+        var elem = document.getElementById('drawCanvas');
+    
+        while (elem) {
+            left = left + parseInt(elem.offsetLeft);
+            top = top + parseInt(elem.offsetTop);
+            elem = elem.offsetParent;
+        }
+    
+        ev._x = ev.targetTouches[0].pageX - left;
+        ev._y = ev.targetTouches[0].pageY - top;
+        }
+        // tool의 이벤트 핸들러를 호출한다.
+        var func = tool2[ev.type];
+        if (func) {
+        func(ev);
+        }
+    }
+    
+    function onClear() {
+        canvas = document.getElementById('drawCanvas');
+        canvas2 = document.getElementById('drawCanvas2');
+        canvas3 = document.getElementById('drawCanvas3');
+        canvas4 = document.getElementById('drawCanvas4');
+
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.restore();
+
+        context2.save();
+        context2.setTransform(1, 0, 0, 1, 0, 0);
+        context2.clearRect(0, 0, canvas2.width, canvas2.height);
+        context2.restore();
+
+        context3.save();
+        context3.setTransform(1, 0, 0, 1, 0, 0);
+        context3.clearRect(0, 0, canvas3.width, canvas3.height);
+        context3.restore();
+
+        context4.save();
+        context4.setTransform(1, 0, 0, 1, 0, 0);
+        context4.clearRect(0, 0, canvas4.width, canvas4.height);
+        context4.restore();
+    }
+</script>
+
+<script type="text/javascript">
+    if (window.addEventListener) {
+        window.addEventListener('load', InitEvent3, false);
+    }
+    var canvas5, context5, tool3;
+    function InitEvent3() {
+        canvas5 = document.getElementById('drawCanvas5');
+        canvas6 = document.getElementById('drawCanvas6');
+
+        if (!canvas5) {
+        alert("캔버스 객체를 찾을 수 없음");
+        return;
+        }
+        if (!canvas5.getContext) {
+        alert("Drawing Contextf를 찾을 수 없음");
+        return;
+        }
+        context5 = canvas5.getContext('2d');
+        if (!context5) {
+        alert("getContext() 함수를 호출 할 수 없음");
+        return;
+        }
+
+        if (!canvas6) {
+        alert("캔버스 객체를 찾을 수 없음");
+        return;
+        }
+        if (!canvas6.getContext) {
+        alert("Drawing Contextf를 찾을 수 없음");
+        return;
+        }
+        context6 = canvas6.getContext('2d');
+        if (!context6) {
+        alert("getContext() 함수를 호출 할 수 없음");
+        return;
+        }
+
+        // Pencil tool 객체를 생성 한다.
+        tool3 = new tool_pencil3();
+        canvas5.addEventListener('mousedown', ev_canvas3, false);
+        canvas5.addEventListener('mousemove', ev_canvas3, false);
+        canvas5.addEventListener('mouseup', ev_canvas3, false);
+        canvas5.addEventListener('touchstart', ev_canvas3, false);
+        canvas5.addEventListener('touchmove', ev_canvas3, false);
+        canvas5.addEventListener('touchend', ev_canvas3, false);
+    }
+    function tool_pencil3() {
+        var tool3 = this;
+        this.started = false;
+    
+        // 마우스를 누르는 순간 그리기 작업을 시작 한다. 
+        this.mousedown = function (ev) {
+        context5.beginPath();
+        context5.moveTo(ev._x, ev._y);
+        context6.beginPath();
+        context6.moveTo(ev._x, ev._y);
+        tool3.started = true;
+        };
+        // 마우스가 이동하는 동안 계속 호출하여 Canvas에 Line을 그려 나간다
+        this.mousemove = function (ev) {
+        if (tool3.started) {
+            context5.lineTo(ev._x, ev._y);
+            context6.lineTo(ev._x, ev._y);
+            context5.stroke();
+            context6.stroke();
+        }
+        };
+        // 마우스 떼면 그리기 작업을 중단한다
+        this.mouseup = function (ev) {
+        if (tool3.started) {
+            tool3.mousemove(ev);
+            tool3.started = false;
+        }
+        };
+    
+        // 마우스를 누르는 순간 그리기 작업을 시작 한다. 
+        this.touchstart = function (ev) {
+        context5.beginPath();
+        context5.moveTo(ev._x, ev._y);
+        context6.beginPath();
+        context6.moveTo(ev._x, ev._y);
+        tool3.started = true;
+        };
+        // 마우스가 이동하는 동안 계속 호출하여 Canvas에 Line을 그려 나간다
+        this.touchmove = function (ev) {
+        if (tool3.started) {
+            context5.lineTo(ev._x, ev._y);
+            context5.stroke();
+            context6.lineTo(ev._x, ev._y);
+            context6.stroke();
+              
+        }
+        };
+        // 마우스 떼면 그리기 작업을 중단한다
+        this.touchend = function (ev) {
+        if (tool3.started) {
+            tool3.touchmove(ev);
+            tool3.started = false;
+            
+        }
+        };
+    }
+    // Canvas요소 내의 좌표를 결정 한다.
+    function ev_canvas3(ev) {
+        if (ev.layerX || ev.layerX == 0) { // Firefox 브라우저
+        ev._x = ev.layerX;
+        ev._y = ev.layerY;
+        }
+        else if (ev.offsetX || ev.offsetX == 0) { // Opera 브라우저
+        ev._x = ev.offsetX;
+        ev._y = ev.offsetY;
+        }
+        else if (ev.targetTouches[0] || ev.targetTouches[0].pageX == 0) {   //핸드폰
+        var left = 0;
+        var top = 0;
+        var elem = document.getElementById('drawCanvas');
+    
+        while (elem) {
+            left = left + parseInt(elem.offsetLeft);
+            top = top + parseInt(elem.offsetTop);
+            elem = elem.offsetParent;
+        }
+    
+        ev._x = ev.targetTouches[0].pageX - left;
+        ev._y = ev.targetTouches[0].pageY - top;
+        }
+        // tool의 이벤트 핸들러를 호출한다.
+        var func = tool3[ev.type];
+        if (func) {
+        func(ev);
+        }
+    }
+    
+    function onClear() {
+        canvas = document.getElementById('drawCanvas');
+        canvas2 = document.getElementById('drawCanvas2');
+        canvas3 = document.getElementById('drawCanvas3');
+        canvas4 = document.getElementById('drawCanvas4');
+
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.restore();
+
+        context2.save();
+        context2.setTransform(1, 0, 0, 1, 0, 0);
+        context2.clearRect(0, 0, canvas2.width, canvas2.height);
+        context2.restore();
+
+        context3.save();
+        context3.setTransform(1, 0, 0, 1, 0, 0);
+        context3.clearRect(0, 0, canvas3.width, canvas3.height);
+        context3.restore();
+
+        context4.save();
+        context4.setTransform(1, 0, 0, 1, 0, 0);
+        context4.clearRect(0, 0, canvas4.width, canvas4.height);
+        context4.restore();
+    }
+</script>
+
+<script type="text/javascript">
+    if (window.addEventListener) {
+        window.addEventListener('load', InitEvent4, false);
+    }
+
+    
+    var canvas7, context7, tool4;
+    function InitEvent4() {
+        canvas7 = document.getElementById('drawCanvas7');
+        canvas8 = document.getElementById('drawCanvas8');
+
+        if (!canvas7) {
+        alert("캔버스 객체를 찾을 수 없음");
+        return;
+        }
+        if (!canvas7.getContext) {
+        alert("Drawing Contextf를 찾을 수 없음");
+        return;
+        }
+        context7 = canvas7.getContext('2d');
+        if (!context7) {
+        alert("getContext() 함수를 호출 할 수 없음");
+        return;
+        }
+
+        if (!canvas8) {
+        alert("캔버스 객체를 찾을 수 없음");
+        return;
+        }
+        if (!canvas8.getContext) {
+        alert("Drawing Contextf를 찾을 수 없음");
+        return;
+        }
+        context8 = canvas8.getContext('2d');
+        if (!context8) {
+        alert("getContext() 함수를 호출 할 수 없음");
+        return;
+        }
+
+        // Pencil tool 객체를 생성 한다.
+        tool4 = new tool_pencil4();
+        canvas7.addEventListener('mousedown', ev_canvas4, false);
+        canvas7.addEventListener('mousemove', ev_canvas4, false);
+        canvas7.addEventListener('mouseup', ev_canvas4, false);
+        canvas7.addEventListener('touchstart', ev_canvas4, false);
+        canvas7.addEventListener('touchmove', ev_canvas4, false);
+        canvas7.addEventListener('touchend', ev_canvas4, false);
+    }
+    function tool_pencil4() {
+        var tool4 = this;
+        this.started = false;
+    
+        // 마우스를 누르는 순간 그리기 작업을 시작 한다. 
+        this.mousedown = function (ev) {
+        context7.beginPath();
+        context7.moveTo(ev._x, ev._y);
+        context8.beginPath();
+        context8.moveTo(ev._x, ev._y);
+        tool4.started = true;
+        };
+        // 마우스가 이동하는 동안 계속 호출하여 Canvas에 Line을 그려 나간다
+        this.mousemove = function (ev) {
+        if (tool4.started) {
+            context7.lineTo(ev._x, ev._y);
+            context8.lineTo(ev._x, ev._y);
+            context7.stroke();
+            context8.stroke();
+        }
+        };
+        // 마우스 떼면 그리기 작업을 중단한다
+        this.mouseup = function (ev) {
+        if (tool4.started) {
+            tool4.mousemove(ev);
+            tool4.started = false;
+        }
+        };
+    
+        // 마우스를 누르는 순간 그리기 작업을 시작 한다. 
+        this.touchstart = function (ev) {
+        context7.beginPath();
+        context7.moveTo(ev._x, ev._y);
+        context8.beginPath();
+        context8.moveTo(ev._x, ev._y);
+        tool4.started = true;
+        };
+        // 마우스가 이동하는 동안 계속 호출하여 Canvas에 Line을 그려 나간다
+        this.touchmove = function (ev) {
+        if (tool4.started) {
+            context7.lineTo(ev._x, ev._y);
+            context7.stroke();
+            context8.lineTo(ev._x, ev._y);
+            context8.stroke();
+              
+        }
+        };
+        // 마우스 떼면 그리기 작업을 중단한다
+        this.touchend = function (ev) {
+        if (tool4.started) {
+            tool4.touchmove(ev);
+            tool4.started = false;
+            
+        }
+        };
+    }
+    // Canvas요소 내의 좌표를 결정 한다.
+    function ev_canvas4(ev) {
+        if (ev.layerX || ev.layerX == 0) { // Firefox 브라우저
+        ev._x = ev.layerX;
+        ev._y = ev.layerY;
+        }
+        else if (ev.offsetX || ev.offsetX == 0) { // Opera 브라우저
+        ev._x = ev.offsetX;
+        ev._y = ev.offsetY;
+        }
+        else if (ev.targetTouches[0] || ev.targetTouches[0].pageX == 0) {   //핸드폰
+        var left = 0;
+        var top = 0;
+        var elem = document.getElementById('drawCanvas');
+    
+        while (elem) {
+            left = left + parseInt(elem.offsetLeft);
+            top = top + parseInt(elem.offsetTop);
+            elem = elem.offsetParent;
+        }
+    
+        ev._x = ev.targetTouches[0].pageX - left;
+        ev._y = ev.targetTouches[0].pageY - top;
+        }
+        // tool의 이벤트 핸들러를 호출한다.
+        var func = tool4[ev.type];
+        if (func) {
+        func(ev);
+        }
+    }
+    
+    function onClear() {
+        canvas = document.getElementById('drawCanvas');
+        canvas2 = document.getElementById('drawCanvas2');
+        canvas3 = document.getElementById('drawCanvas3');
+        canvas4 = document.getElementById('drawCanvas4');
+        canvas5 = document.getElementById('drawCanvas5');
+        canvas6 = document.getElementById('drawCanvas6');
+        canvas7 = document.getElementById('drawCanvas7');
+        canvas8 = document.getElementById('drawCanvas8');
+
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.restore();
+
+        context2.save();
+        context2.setTransform(1, 0, 0, 1, 0, 0);
+        context2.clearRect(0, 0, canvas2.width, canvas2.height);
+        context2.restore();
+
+        context3.save();
+        context3.setTransform(1, 0, 0, 1, 0, 0);
+        context3.clearRect(0, 0, canvas3.width, canvas3.height);
+        context3.restore();
+
+        context4.save();
+        context4.setTransform(1, 0, 0, 1, 0, 0);
+        context4.clearRect(0, 0, canvas4.width, canvas4.height);
+        context4.restore();
+
+        context5.save();
+        context5.setTransform(1, 0, 0, 1, 0, 0);
+        context5.clearRect(0, 0, canvas5.width, canvas5.height);
+        context5.restore();
+
+        context6.save();
+        context6.setTransform(1, 0, 0, 1, 0, 0);
+        context6.clearRect(0, 0, canvas6.width, canvas6.height);
+        context6.restore();
+
+        context7.save();
+        context7.setTransform(1, 0, 0, 1, 0, 0);
+        context7.clearRect(0, 0, canvas7.width, canvas7.height);
+        context7.restore();
+
+        context8.save();
+        context8.setTransform(1, 0, 0, 1, 0, 0);
+        context8.clearRect(0, 0, canvas8.width, canvas8.height);
+        context8.restore();
+    }
+</script>
+
+<!-- 동의서 jpg 저장 -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
+<script type="text/javascript">
+    $(function(){
+        $("#pick").on("click", function(){
+        // 캡처 라이브러리를 통해 canvas 오브젝트 받고 이미지 파일로 리턴함
+            html2canvas(document.querySelector("#capture")).then(canvas => {
+            
+                var imgdata = canvas.toDataURL();
+                $.ajax({
+                    type: 'POST',
+                    url: 'agreeimgsave/',
+                    data: {
+                        imagedata:imgdata,
+                        'csrfmiddlewaretoken': "{{ csrf_token }}"
+                    },
+                    success: function(result) {
+                        var filename = result['filename'];
+  
+                    },
+                
+                });
+                document.getElementById("checkvalue").click();
+
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+ 
+        // 라디오버튼 클릭시 이벤트 발생
+        $("input:radio[name=sign]").click(function(){
+     
+            if($("input[name=sign]:checked").val() == "1"){
+                document.getElementById("parent").style.display  = '';
+                document.getElementById("alone").style.display  = 'none';     
+            }else if($("input[name=sign]:checked").val() == "0"){
+                document.getElementById("parent").style.display  = 'none';
+                document.getElementById("alone").style.display  = '';  
+            }
+        });
+    });
+</script> 
+
+<meta charset="UTF-8" />
+<div id="content-wrapper" class="d-flex flex-column">
+
+<!-- Main Content -->
+<div id="content">
+
+    <!-- Topbar -->
+    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+        <!-- Sidebar Toggle (Topbar) -->
+        <form class="form-inline">
+            <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                <i class="fa fa-bars"></i>
+            </button>
+        </form>
+
+        <button type="button" id="sidebarCollapse" class="navbar-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#sidebarCollapse').on('click', function () {
+                    $('#sidebar').toggleClass('active');
+                    $(this).toggleClass('active');
+                });
+            });
+        </script>
+
+        <!-- Topbar Search -->
+        <!--
+        <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <div class="input-group">
+                <input type="text" class="form-control bg-light border-0 small mt-0" placeholder="Search for..."
+                    aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        -->
+        <!-- Topbar Navbar -->
+        <ul class="navbar-nav ml-auto">
+
+            <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+            <li class="nav-item dropdown no-arrow d-sm-none">
+                <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-search fa-fw"></i>
+                </a>
+                <!-- Dropdown - Messages -->
+                <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                    aria-labelledby="searchDropdown">
+                    <form class="form-inline mr-auto w-100 navbar-search">
+                        <div class="input-group">
+                            <input type="text" class="form-control bg-light border-0 small"
+                                placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </li>
+
+            <!-- Nav Item - Alerts -->
+            <li class="nav-item dropdown no-arrow mx-1">
+                <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell fa-fw"></i>
+                    <!-- Counter - Alerts -->
+                    <span class="badge badge-danger badge-counter">3+</span>
+                </a>
+                <!-- Dropdown - Alerts -->
+                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                    aria-labelledby="alertsDropdown">
+                    <h6 class="dropdown-header">
+                        Alerts Center
+                    </h6>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-primary">
+                                <i class="fas fa-file-alt text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">December 12, 2019</div>
+                            <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                        </div>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-success">
+                                <i class="fas fa-donate text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">December 7, 2019</div>
+                            $290.29 has been deposited into your account!
+                        </div>
+                    </a>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="mr-3">
+                            <div class="icon-circle bg-warning">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-gray-500">December 2, 2019</div>
+                            Spending Alert: We"ve noticed unusually high spending for your account.
+                        </div>
+                    </a>
+                    <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                </div>
+            </li>
+
+            <div class="topbar-divider d-none d-sm-block"></div>
+
+            <!-- Nav Item - User Information -->
+            <li class="nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user_id }}</span>
+                    <img class="img-profile rounded-circle" src="{% static "img/undraw_profile.svg" %}">
+                </a>
+                <!-- Dropdown - User Information -->
+                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                    aria-labelledby="userDropdown">
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Profile
+                    </a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Settings
+                    </a>
+                    <a class="dropdown-item" href="#">
+                        <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Activity Log
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Logout
+                    </a>
+                </div>
+            </li>
+
+        </ul>
+
+    </nav>
+
+    {% comment %} <div class="container"> {% endcomment %}
+
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+            <form action = "" method = "POST" id = "patient">
+                {% csrf_token %}
+                <div class="p-3">
+                    <div class="card o-hidden border-0 shadow-lg my-5">
+
+                        <div id="capture" class="card-body">
+                            <!-- Nested Row within Card Body -->
+                            
+                            <div style="text-align:left;">
+                                <table border="1">
+                                    <tr align="center" bgcolor="#00ffff"><td>갑상선 초음파 영상분석을 위한 개인정보 수집⦁이용, 제공 동의서</td></tr>
+                                    <tr>
+                                        <td>
+                                            <br>
+                                            ◯◯◯ 병원은 인공지능을 활용하여 실시간으로 갑상선 초음파 영상분석 서비스를 제공하기 위해<br>
+                                            아래와 같이 개인정보를 수집⦁이용 및 제공하고자 합니다. 내용을 자세히 읽으신 후 동의 여부를<br>
+                                            결정하여 주십시오.<br><br>
+
+                                            ☐ 개인정보 수집⦁이용 내역<br>
+                                            <table border="2">
+                                                <thead>
+                                                    <tr align="center" bgcolor="#D3D3D3">
+                                                        <th width="250">항목</th>
+                                                        <th width="250">수집 목적</th>
+                                                        <th width="250">보유기간</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr align="center">
+                                                        <th>성명, 연령, 초음파 영상자료</th>
+                                                        <th>인공지능 영상분석 의뢰</th>
+                                                        <th>1년</th>
+                                                    </tr>
+                                                </tbody>
+                                            </table><br>
+
+                                            ● 위의 개인정보 수집, 이용에 대한 동의를 거부할 권리가 있습니다.<br>
+                                            &nbsp; &nbsp; &nbsp;그러나 동의를 거부할 경우 원할한 서비스 제공에 일부 제한을 받을 수 있습니다.<br><br>
+                                            <div style="text-align: left">☞ 위와 같이 개인정보를 수집, 이용하는데 동의하십니까?</div>
+                                            <div style="text-align:left; padding:0 0 15px 0;">
+                                                &nbsp; &nbsp; &nbsp; &nbsp; <input type="radio" value="1" name="agree1" id="agree11">&nbsp;<label for="agree11">동의합니다.</label>
+                                                &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  <input type="radio" value="0" name="agree1" id="agree10">&nbsp;<label for="agree10">동의하지 않습니다.</label>
+                                            </div><br><br>
+
+                                            ☐ 개인정보 제 3자 제공 내역<br>
+                                            <table border="2">
+                                                <thead>
+                                                    <tr align="center" bgcolor="#D3D3D3">
+                                                        <th width="187">제공받는 기관</th>
+                                                        <th width="187">제공 목적</th>
+                                                        <th width="250">제공하는 항목</th>
+                                                        <th width="125">보유기간</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr align="center">
+                                                        <th>㈜ 엘티포</th>
+                                                        <th>진단 일치율 확인</th>
+                                                        <th>성별, 연령, 초음파 영상자료</th>
+                                                        <th>1년</th>
+                                                    </tr>
+                                                </tbody>
+                                            </table><br>
+
+                                            ● 위의 개인정보 제공에 대한 동의를 거부할 권리가 있습니다.<br>
+                                            &nbsp; &nbsp; &nbsp;그러나 동의를 거부할 경우 원할한 서비스 제공에 일부 제한을 받을 수 있습니다.<br><br>
+                                            <div style="text-align: left">&nbsp;☞ 위와 같이 개인정보를 제 3자 제공하는데 동의하십니까?</div>
+                                            <div style="text-align:left; padding:0 0 15px 0;">
+                                                &nbsp; &nbsp; &nbsp; &nbsp; <input type="radio" value="1" name="agree2" id="agree21">&nbsp;<label for="agree21">동의합니다.</label>
+                                                &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  <input type="radio" value="0" name="agree2" id="agree20">&nbsp;<label for="agree20">동의하지 않습니다.</label>
+                                                </div>
+                                            </div><br>
+                                            
+                                            <div style="text-align: center">{{ year }}년&nbsp; {{ month }}월&nbsp; {{ day }}일</div><br>
+                                            <div style="text-align:right; padding:0 0 0px 0;">
+
+
+                                                <canvas style="position:relative; top:40px; width: 100px; height: 42px;" id="drawCanvas2" style="border:1px solid black"></canvas>
+                                                <canvas style="position:relative; top:40px; width: 100px; height: 42px;" id="drawCanvas4" style="border:1px solid black"></canvas>
+                                                <p class="m-0">본인&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 성명 :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(인)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                                                                                                
+                                                <canvas style="position:relative; top:40px; width: 100px; height: 42px;" id="drawCanvas6" style="border:1px solid black"></canvas>
+                                                <canvas style="position:relative; top:40px; width: 100px; height: 42px;" id="drawCanvas8" style="border:1px solid black"></canvas>
+                                                <p class="m-0">법정 대리인&nbsp;&nbsp;&nbsp; 성명 :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(인)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                                            
+                                            </div><br><br><br>
+                                            <div style="text-align:center">◯◯◯ 병원장 귀중</div><br><br>
+                                        </td>
+                                    </tr>
+
+                                </table>
+
+                            </div>
+                    </div>
+                    <div style="text-align:center; padding:0 0 20px 0;">
+                        <input type="radio" value="0" name="sign" id="agreealone" checked>&nbsp;<label for="agreealone">환자 본인</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input type="radio" value="1" name="sign" id="agreeparent">&nbsp;<label for="agreeparent">법정 대리인</label>
+                        <div id="alone">
+                            <br>
+                            <canvas id="drawCanvas" style="border:1px solid black "></canvas>
+                            <canvas id="drawCanvas3" style="border:1px solid black"></canvas>
+                        </div>
+                        <div id="parent" style="display:none">
+                            <br>
+                            <canvas id="drawCanvas5" style="border:1px solid black"></canvas>
+                            <canvas id="drawCanvas7" style="border:1px solid black"></canvas>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center; padding:0 0 20px 0;">
+                        <button type="button" id="pick" class="btn btn-secondary">완료</button>
+                        <button type="button" class="btn btn-secondary" onclick="onClear();">지우기</button>
+                        <button id="checkvalue" style="display:none">검증</button>                     
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    
+</div>
+
+</div>
+{% endblock %}
+<!-- Content Wrapper -->
+
+<!-- Main Content -->
+
+<script>
+
+
+<!-- Bootstrap core JavaScript-->
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+<script src = '{% static "js/jquery-3.3.1.slim.min.js" %}'></script>
+
+<!-- Custom scripts for all pages-->
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+<script src="{% static 'js/popupImage' %}"></script>
+</body>
+
+</html>

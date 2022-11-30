@@ -1,0 +1,42 @@
+{% load static %}
+
+<!-- Page Wrapper -->
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-secondary sidebar sidebar-dark accordion" id="sidebar">
+
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center">
+            <div class="sidebar-brand-icon rotate-n-0">
+                <img id = "logo" style="width: 200px;" src="{% static 'img/ltlux-logo.png' %}"></img>
+            </div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <hr class="sidebar-divider">
+
+        <li class="nav-item active">
+            
+            <div id="collapsePages" class="collapse show" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <h6 class="collapse-header">Interpretation Pages:</h6>
+                    {% if True %}
+                        <a class="collapse-item" href="{% url 'board' %}">AI Interpretation</a>
+                    {% else %}
+                        <a class="collapse-item" href="{% url 'agree' %}">AI Interpretation</a>
+                    {% endif %}
+                    <h6 class="collapse-header">Clinic Pages:</h6>
+                    <a class="collapse-item" href="{% url 'history:tagging_patient_total_history' %}">Tagging </a>
+                    <a class="collapse-item" href="{% url 'history:tagging_tables_pre_interpretion' %}">Pre - Interpretation </a>
+                    <a class="collapse-item" href="{% url 'history:tagging_tables_pre_tagging' %}">Pre - Tagging</a>
+                    <a class="collapse-item" href="{% url 'history:tagging_history' %}">Tagging history</a>
+                    <h6 class="collapse-header">AI quantitative measuring:</h6>
+                    <a class="collapse-item" href="{% url 'chart:chart_page' %}">Chart</a> 
+                    <h6 class="collapse-header">Login Screens:</h6>
+                    <a class="collapse-item" href="{% url 'logout' %}">Logout</a>
+                </div>
+            </div>
+        </li>
+    </ul>

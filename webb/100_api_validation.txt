@@ -1,0 +1,10 @@
+api: 
+mean: 0.05
+max: 0.10
+min: 0.05
+
+api: history/
+mean: 0.05
+max: 0.06
+min: 0.05
+

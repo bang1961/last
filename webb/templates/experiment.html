@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="container">
+        <div>
+            divdiv실
+        </div>
+
+        <div class="inner-container">
+            <div>
+                divdiv실?
+            </div>
+
+            <div class="tool">
+                divdiv실!
+                <span class="tooltext tool-bottom">divdiv실!?</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="get" action="" class="form">
+        <select name="seasons" id="change_text" onchange="this.form.submit();">
+            <option value="0">봄</option>
+            <option value="1">여름</option>
+            <option value="2">가을</option>
+            <option value="3">겨울</option>
+        </select>
+    </form>
+    <script>
+        var selectBoxChange = function(value){
+            console.log("변경 테스트 : " + value);
+        }
+    </script>
+
+    <style>
+        /* 툴팁 기본 스타일 설정 시작 */
+
+        .tool {
+        position: relative;
+        display: block;
+        }
+
+        .tool .tooltext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+
+        position: absolute;
+        z-index: 1;
+        }
+
+        .tool:hover .tooltext {
+        visibility: visible;
+        }
+
+        .tool .tool-bottom {
+            width: 120px;
+            top: 150%;
+            left: 5%;
+            margin-left: -60px;
+          }
+          
+          
+          .tool .tool-bottom::after {
+            bottom: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-color: transparent transparent black transparent;
+          }
+    </style>
+{% endblock %}

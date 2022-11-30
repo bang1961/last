@@ -1,0 +1,802 @@
+Watching for file changes with StatReloader
+웹 서버가 시작 되었습니다.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+August 04, 2022 - 17:19:20
+Django version 3.2.7, using settings 'lt4.settings'
+Starting development server at http://0:9999/
+Quit the server with CONTROL-C.
+DB에서 사용자 id를 가져올 수 없어 현재 로그인 되어있는 id를 사용합니다.
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+ImagePATH:  08040301_axial.jpg
+ImagePATH2 :  none
+[04/Aug/2022 17:19:57] "POST / HTTP/1.1" 302 0
+dove00009
+DETECT []
+s ['/home/lt4/lt4/media/2022/08/04/dove00009/dove00009_axial.jpg', '/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/dove00009_axial_nodule_2.jpg', '/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/hst/dove00009_axial_hst_2.jpg']
+nodule_image_path ['/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/hst/dove00009_axial_hst_2.jpg']
+nodule_image_path2: ['/home/lt4/lt4/media/2022/08/04/dove00009/dove00009_axial/dove00009_axial_nodule_0.jpg']
+
+ /home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial 
+
+
+
+ /home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial 
+
+ file_paths : ['/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/dove00009_axial_nodule_2.jpg', '/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/hst/dove00009_axial_hst_2.jpg'] 
+
+
+
+
+ file_paths : [] 
+
+
+첫 검사 텍스트 파일을 찾지 못하였습니다.
+
+
+ file_paths : [] 
+
+
+Internal Server Error: /
+Traceback (most recent call last):
+  File "/home/lt4/lt4/IO/templatetags/IO_filters.py", line 122, in view
+    text = open(file_paths[int(num) - 1],'r').readlines()[0]
+IndexError: list index out of range
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/core/handlers/exception.py", line 47, in inner
+    response = get_response(request)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/core/handlers/base.py", line 181, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/lt4/lt4/IO/views.py", line 103, in board
+    return render(request,'blank.html', context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/shortcuts.py", line 19, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/loader.py", line 62, in render_to_string
+    return template.render(context, request)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/backends/django.py", line 61, in render
+    return self.template.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 170, in render
+    return self._render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/loader_tags.py", line 150, in render
+    return compiled_parent._render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 162, in _render
+    return self.nodelist.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/loader_tags.py", line 62, in render
+    result = block.nodelist.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 312, in render
+    return nodelist.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 211, in render
+    nodelist.append(node.render_annotated(context))
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 516, in render
+    return self.nodelist.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 312, in render
+    return nodelist.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 516, in render
+    return self.nodelist.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 211, in render
+    nodelist.append(node.render_annotated(context))
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 516, in render
+    return self.nodelist.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 938, in render
+    bit = node.render_annotated(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 905, in render_annotated
+    return self.render(context)
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 514, in render
+    values = {key: val.resolve(context) for key, val in self.extra_context.items()}
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/defaulttags.py", line 514, in <dictcomp>
+    values = {key: val.resolve(context) for key, val in self.extra_context.items()}
+  File "/home/lt4/.local/lib/python3.8/site-packages/django/template/base.py", line 698, in resolve
+    new_obj = func(obj, *arg_vals)
+  File "/home/lt4/lt4/IO/templatetags/IO_filters.py", line 135, in view
+    text = open(file_paths[int(num) - 1],'r').readlines()[0]
+IndexError: list index out of range
+[04/Aug/2022 17:20:00] "GET / HTTP/1.1" 500 342072
+dove00009
+DETECT ['/home/lt4/lt4/media/2022/08/04/dove00009/detected/dove00009_axial_detected.jpg']
+s ['/home/lt4/lt4/media/2022/08/04/dove00009/detected/dove00009_axial_detected.jpg', '/home/lt4/lt4/media/2022/08/04/dove00009/dove00009_axial.jpg', '/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/dove00009_axial_nodule_2.jpg', '/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/hst/dove00009_axial_hst_2.jpg']
+nodule_image_path ['/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/hst/dove00009_axial_hst_2.jpg']
+nodule_image_path2: ['/home/lt4/lt4/media/2022/08/04/dove00009/dove00009_axial/dove00009_axial_nodule_0.jpg']
+
+ /home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial 
+
+
+
+ /home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial 
+
+ file_paths : ['/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/dove00009_axial_nodule_2.jpg', '/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/dove00009_axial_nodule_2.txt', '/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/hst/dove00009_axial_hst_2.jpg'] 
+
+
+
+
+ file_paths : ['/home/lt4/lt4/media/2022/08/04/dove00009/nodule/dove00009_axial/dove00009_axial_nodule_2.txt'] 
+
+
+[04/Aug/2022 17:20:02] "GET / HTTP/1.1" 200 52937
+[04/Aug/2022 17:20:02] "GET /media/2022/08/04/dove00009/detected/dove00009_axial_detected.jpg HTTP/1.1" 200 105181
+[04/Aug/2022 17:20:02] "GET /media/2022/08/04/dove00009/nodule/dove00009_axial/hst/dove00009_axial_hst_2.jpg HTTP/1.1" 200 24871
+[04/Aug/2022 17:20:04] "GET /edit/315 HTTP/1.1" 302 0
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00009/jsons/dove00009_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:20:04] "GET /history/315 HTTP/1.1" 200 113590
+[04/Aug/2022 17:20:04] "GET /media/2022/08/04/dove00009/nodule/dove00009_axial/dove00009_axial_nodule_2.jpg HTTP/1.1" 200 16491
+[04/Aug/2022 17:20:04] "GET /media/2022/08/04/dove00009/detected/dove00009_axial_detected.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:20:04] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:20:04] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:04] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:20:04] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:04] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:20:04] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:04] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:20:04] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:20:04] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:04] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:04] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:04] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:04] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:20:04] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:04] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:20:04] "POST /history/like_ready1 HTTP/1.1" 200 39
+DB에서 사용자 id를 가져올 수 없어 현재 로그인 되어있는 id를 사용합니다.
+[04/Aug/2022 17:20:16] "GET / HTTP/1.1" 200 40587
+DB에서 사용자 id를 가져올 수 없어 현재 로그인 되어있는 id를 사용합니다.
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+<MultiValueDict: {'imgfile': [<InMemoryUploadedFile: 08040301_axial.jpg (image/jpeg)>]}>
+ImagePATH:  08040301_axial.jpg
+ImagePATH2 :  none
+[04/Aug/2022 17:20:27] "POST / HTTP/1.1" 302 0
+dove00008
+DETECT ['/home/lt4/lt4/media/2022/08/04/dove00008/detected/dove00008_axial_detected.jpg']
+s ['/home/lt4/lt4/media/2022/08/04/dove00008/detected/dove00008_axial_detected.jpg', '/home/lt4/lt4/media/2022/08/04/dove00008/dove00008_axial.jpg', '/home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg', '/home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial/hst/dove00008_axial_hst_2.jpg']
+nodule_image_path ['/home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial/hst/dove00008_axial_hst_2.jpg']
+nodule_image_path2: ['/home/lt4/lt4/media/2022/08/04/dove00008/dove00008_axial/dove00008_axial_nodule_0.jpg']
+
+ /home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial 
+
+
+
+ /home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial 
+
+ file_paths : ['/home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg', '/home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.txt', '/home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial/hst/dove00008_axial_hst_2.jpg'] 
+
+
+
+
+ file_paths : ['/home/lt4/lt4/media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.txt'] 
+
+
+[04/Aug/2022 17:20:27] "GET / HTTP/1.1" 200 52937
+[04/Aug/2022 17:20:27] "GET /templates/static/css/sidebar_style.css HTTP/1.1" 304 0
+[04/Aug/2022 17:20:27] "GET /media/2022/08/04/dove00008/detected/dove00008_axial_detected.jpg HTTP/1.1" 200 105181
+[04/Aug/2022 17:20:27] "GET /media/2022/08/04/dove00008/nodule/dove00008_axial/hst/dove00008_axial_hst_2.jpg HTTP/1.1" 200 24871
+[04/Aug/2022 17:20:32] "GET /edit/316 HTTP/1.1" 302 0
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:20:32] "GET /history/316 HTTP/1.1" 200 113590
+[04/Aug/2022 17:20:32] "GET /media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg HTTP/1.1" 200 16491
+[04/Aug/2022 17:20:32] "GET /media/2022/08/04/dove00008/detected/dove00008_axial_detected.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:20:32] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:20:32] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:20:32] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:20:32] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:20:32] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:20:32] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:20:32] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:20:32] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:24:54] "GET /history/316 HTTP/1.1" 200 113592
+[04/Aug/2022 17:24:54] "GET /templates/static/css/sidebar_style.css HTTP/1.1" 304 0
+[04/Aug/2022 17:24:54] "GET /media/2022/08/04/dove00008/detected/dove00008_axial_detected.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:24:54] "GET /media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:24:54] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:24:54] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:24:54] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:24:54] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:24:54] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:24:54] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:24:54] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:24:54] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:24:54] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:24:54] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:24:54] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:24:54] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:24:54] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:24:54] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:24:54] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:24:54] "POST /history/like_ready1 HTTP/1.1" 200 39
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:25:05] "GET /history/316 HTTP/1.1" 200 113595
+[04/Aug/2022 17:25:05] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:25:05] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:25:05] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:25:05] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:25:05] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:05] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:25:05] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:25:05] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:25:56] "GET /history/316 HTTP/1.1" 200 113617
+[04/Aug/2022 17:25:56] "GET /media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:25:56] "GET /media/2022/08/04/dove00008/detected/dove00008_axial_detected.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:25:56] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:25:56] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:25:56] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:25:56] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:25:56] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:25:56] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:25:56] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:25:56] "POST /history/like_ready HTTP/1.1" 200 37
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:27:10] "GET /history/316 HTTP/1.1" 200 118832
+[04/Aug/2022 17:27:10] "GET /media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:27:10] "GET /media/2022/08/04/dove00008/detected/dove00008_axial_detected.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:27:10] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:27:10] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:27:10] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:10] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:27:10] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:10] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:10] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:10] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:27:10] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:27:10] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:10] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:27:10] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:10] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:10] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:10] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:27:10] "POST /history/like_ready1 HTTP/1.1" 200 39
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:27:30] "GET /history/316 HTTP/1.1" 200 121784
+[04/Aug/2022 17:27:30] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:27:30] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:30] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:27:30] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:30] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:30] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:30] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:30] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:30] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:27:30] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:27:30] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:30] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:27:30] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:27:30] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:27:30] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:27:30] "POST /history/like_ready3 HTTP/1.1" 200 39
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:34:44] "GET /history/316 HTTP/1.1" 200 118166
+[04/Aug/2022 17:34:44] "GET /templates/static/css/sidebar_style.css HTTP/1.1" 304 0
+[04/Aug/2022 17:34:44] "GET /media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:34:44] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:34:44] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:34:44] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:34:44] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:34:44] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:34:44] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:34:44] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:34:44] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:34:44] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:34:44] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:34:44] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:34:44] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:34:44] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:34:44] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:34:44] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:34:44] "POST /history/like_ready1 HTTP/1.1" 200 39
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:35:20] "GET /history/316 HTTP/1.1" 200 118052
+[04/Aug/2022 17:35:20] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:35:20] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:35:20] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:35:20] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:35:20] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:35:20] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:35:20] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:35:20] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:35:20] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:35:20] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:35:20] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:35:20] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:35:20] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:35:20] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:35:20] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:35:20] "POST /history/like_ready3 HTTP/1.1" 200 39
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:36:17] "GET /history/316 HTTP/1.1" 200 118823
+[04/Aug/2022 17:36:17] "GET /media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:36:17] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:36:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:36:17] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:36:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:36:17] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:36:17] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:36:17] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:36:17] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:37:02] "GET /history/316 HTTP/1.1" 200 118823
+[04/Aug/2022 17:37:02] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:37:02] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:37:02] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:37:02] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:37:02] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:37:02] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:02] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:37:02] "POST /history/like_ready HTTP/1.1" 200 37
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:37:53] "GET /history/316 HTTP/1.1" 200 118526
+[04/Aug/2022 17:37:53] "GET /media/2022/08/04/dove00008/nodule/dove00008_axial/dove00008_axial_nodule_2.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:37:53] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:37:53] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:37:53] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:53] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:37:53] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:37:53] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:53] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:53] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:53] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:37:53] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:53] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:53] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:37:53] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:53] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:37:53] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:37:53] "POST /history/like_ready3 HTTP/1.1" 200 39
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:38:34] "GET /history/316 HTTP/1.1" 200 118525
+[04/Aug/2022 17:38:34] "GET /media/2022/08/04/dove00008/detected/dove00008_axial_detected.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:38:34] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:38:34] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:38:34] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:38:34] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:38:34] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:38:34] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:38:34] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:38:34] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/dove00008/jsons/dove00008_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:39:14] "GET /history/316 HTTP/1.1" 200 117133
+[04/Aug/2022 17:39:14] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:14] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:14] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:14] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:14] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:14] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:39:14] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:14] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:14] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:14] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:14] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:14] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:14] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:14] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:39:14] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:14] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:15] "GET /history/ HTTP/1.1" 200 73231
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+ [1.0, 0.0] [0.453, 0.547] C3 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/08/04/08040301/jsons/08040301_axial_nodule.json'] 1
+
+
+
+[04/Aug/2022 17:39:17] "GET /history/312 HTTP/1.1" 200 176705
+[04/Aug/2022 17:39:17] "GET /media/2022/08/04/08040301/detected/08040301_axial_detected.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:39:17] "GET /media/2022/08/04/08040301/nodule/08040301_axial/08040301_axial_nodule_22.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:39:17] "GET /media/2022/08/04/08040301/nodule/08040301_axial/08040301_axial_nodule_2.jpg HTTP/1.1" 304 0
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:39:17] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:17] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:17] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:39:17] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:17] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:17] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:17] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:39:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:18] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:39:18] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:20] "GET /history/ HTTP/1.1" 200 73231
+
+
+ [0.0, 1.0, 0.0] [0.0, 1.0, 0.0] C2 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/07/24/0720211/jsons/0720211_axial_nodule.json', '/home/lt4/lt4/media/2022/07/24/0720211/jsons/0720211_sagittal_nodule.json'] 2
+
+
+
+[04/Aug/2022 17:39:21] "GET /history/265 HTTP/1.1" 200 123935
+Not Found: /history/media/2022/07/24/0720211/detected/0720211_axial_detected.jpg
+[04/Aug/2022 17:39:21] "GET /history/media/2022/07/24/0720211/detected/0720211_axial_detected.jpg HTTP/1.1" 404 9843
+[04/Aug/2022 17:39:21] "GET /media/2022/07/24/0720211/nodule/0720211_axial/0720211_axial_nodule_2.jpg HTTP/1.1" 200 13098
+[04/Aug/2022 17:39:21] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:21] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:21] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:39:21] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:39:21] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:39:21] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:21] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:39:21] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:39:32] "GET /history/ HTTP/1.1" 200 73231
+
+
+ [0.853, 0.147] [0.734, 0.266] C5 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/07/24/072012/jsons/072012_axial_nodule.json', '/home/lt4/lt4/media/2022/07/24/072012/jsons/072012_sagittal_nodule.json'] 2
+
+
+
+[04/Aug/2022 17:40:11] "GET /history/266 HTTP/1.1" 200 121056
+[04/Aug/2022 17:40:11] "GET /templates/static/css/sidebar_style.css HTTP/1.1" 304 0
+[04/Aug/2022 17:40:11] "GET /media/2022/07/24/072012/nodule/072012_axial/072012_axial_nodule_2.jpg HTTP/1.1" 200 8465
+Not Found: /history/media/2022/07/24/072012/detected/072012_axial_detected.jpg
+[04/Aug/2022 17:40:11] "GET /history/media/2022/07/24/072012/detected/072012_axial_detected.jpg HTTP/1.1" 404 9837
+[04/Aug/2022 17:40:11] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:40:11] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:40:11] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:40:11] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:40:11] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:40:11] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:11] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:40:11] "POST /history/like_ready HTTP/1.1" 200 37
+
+
+ [1.0, 0.0, 0.0] [1.0, 0.0, 0.0] C2 
+
+
+
+
+
+ length : ['/home/lt4/lt4/media/2022/07/24/0720202/jsons/0720202_axial_nodule.json', '/home/lt4/lt4/media/2022/07/24/0720202/jsons/0720202_sagittal_nodule.json'] 2
+
+
+
+[04/Aug/2022 17:40:18] "GET /history/256 HTTP/1.1" 200 123889
+Not Found: /history/media/2022/07/24/0720202/detected/0720202_axial_detected.jpg
+[04/Aug/2022 17:40:18] "GET /history/media/2022/07/24/0720202/detected/0720202_axial_detected.jpg HTTP/1.1" 404 9843
+[04/Aug/2022 17:40:18] "GET /media/2022/07/24/0720202/nodule/0720202_axial/0720202_axial_nodule_2.jpg HTTP/1.1" 200 19429
+[04/Aug/2022 17:40:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:18] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:40:18] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:19] "POST /history/dislike_ready1 HTTP/1.1" 200 45
+[04/Aug/2022 17:40:19] "POST /history/like_ready HTTP/1.1" 200 37
+[04/Aug/2022 17:40:19] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:19] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:19] "POST /history/like_ready2 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:19] "POST /history/dislike_ready2 HTTP/1.1" 200 45
+[04/Aug/2022 17:40:19] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:19] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:19] "POST /history/like_ready1 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:19] "POST /history/dislike_ready3 HTTP/1.1" 200 46
+[04/Aug/2022 17:40:19] "POST /history/dislike_ready HTTP/1.1" 200 44
+[04/Aug/2022 17:40:19] "POST /history/like_ready3 HTTP/1.1" 200 39
+[04/Aug/2022 17:40:19] "POST /history/like_ready HTTP/1.1" 200 37

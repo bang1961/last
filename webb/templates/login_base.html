@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        {% include 'login_head.html' %}
+    </head>
+    
+    <body class="bg-gradient-primary">
+        {% block content %}
+        {% endblock %}
+    </body>
+
+    <footer>
+        <div>
+            <hr>
+            <img class = "footer_img" src="{% static 'img/lt4_logo.png' %}"></img>
+                Copyright © Lt4 Corp. All Rights Reserved.
+        </div>    
+    </footer>
+</html>

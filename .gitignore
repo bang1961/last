@@ -26,7 +26,24 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+lt4/models
+lt4/static_root/
 
+lt4/vscode/
+
+lt4/__pycache__/
+
+lt4/IO/__pycache__/
+
+lt4/history/__pycache__/
+
+lt4/db.sqlite3
+
+lt4/history/templatetags/__pycache__/
+
+lt4/accounts/__pycache__/
+
+lt4/_yolov5_/
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
