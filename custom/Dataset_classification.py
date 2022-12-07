@@ -5,7 +5,7 @@ import random
 from UTIL import config
 import splitfolders
 
-ROOT_PATH = config.ROOT_PATH
+ROOT_PATH = '/home/super/projects/thyroid/datasets'
 SEED = 1004
 DATE_DATA = f'{ROOT_PATH}/Axial'
 total_save_path = f'{ROOT_PATH}/total/totals'

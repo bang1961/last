@@ -18,12 +18,9 @@ def Normal_Distribution(path):
         ## Counter | 리스트 안에 있는 요소별 갯수를 구해주는 함수
         ## 라벨별 갯수를 구해주는 부분
         lb_count    = Counter(labels)
-        
+
         print(f'label : {p}')
         for k, v in lb_count.items(): print(f'{k} ==> {v} ({v * 100/ sum(lb_count.values()):.3f} %)')
         print('\n')
-
-
-
 
 Normal_Distribution(ROOT_PATH)      
